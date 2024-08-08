@@ -19,7 +19,8 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 import launch
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer, Node
@@ -30,29 +31,39 @@ HAWK_EXPECT_FREQ = 28
 # Expected number of Realsense messages in 1 second
 INPUT_IMAGES_DROP_FREQ = 30
 
-RT_DETR_MODEL_INPUT_SIZE = 640  # RT-DETR models expect 640x640 encoded image size
-RT_DETR_MODEL_NUM_CHANNELS = 3  # RT-DETR models expect 3 image channels
+YOLOV8_MODEL_INPUT_SIZE = 640  # RT-DETR models expect 640x640 encoded image size
+YOLOV8_MODEL_NUM_CHANNELS = 3  # RT-DETR models expect 3 image channels
 
 REALSENSE_IMAGE_WIDTH = 1280
 REALSENSE_IMAGE_HEIGHT = 720
 
 VISUALIZATION_DOWNSCALING_FACTOR = 10
 
-REALSENSE_TO_RT_DETR_RATIO = REALSENSE_IMAGE_WIDTH / RT_DETR_MODEL_INPUT_SIZE
+REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
-REFINE_MODEL_PATH = '/tmp/refine_model.onnx'
-REFINE_ENGINE_PATH = '/tmp/refine_trt_engine.plan'
-SCORE_MODEL_PATH = '/tmp/score_model.onnx'
-SCORE_ENGINE_PATH = '/tmp/score_trt_engine.plan'
+MESH_FILE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj'
+TEXTURE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png'
 
+REFINE_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/refine_model.onnx'
+REFINE_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/refine_trt_engine.plan'
+SCORE_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/score_model.onnx'
+SCORE_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/score_trt_engine.plan'
+YOLO_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/yolov8/best_grape_juice.onnx'
+YOLO_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/yolov8/best_grape_juice.plan'
 
 def generate_launch_description():
     """Generate launch description for testing relevant nodes."""
     rviz_config_path = os.path.join(
         get_package_share_directory('isaac_ros_foundationpose'),
         'rviz', 'foundationpose_realsense.rviz')
+    
+    yolov8_dir = get_package_share_directory('isaac_ros_yolov8')
 
     launch_args = [
+        DeclareLaunchArgument(
+            "enable_rs",
+            default_value='False',
+            description='Enable the realsense node'),
 
         DeclareLaunchArgument(
             'hawk_expect_freq',
@@ -66,12 +77,12 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'mesh_file_path',
-            default_value='',
+            default_value=MESH_FILE_PATH,
             description='The absolute file path to the mesh file'),
 
         DeclareLaunchArgument(
             'texture_path',
-            default_value='',
+            default_value=TEXTURE_PATH,
             description='The absolute file path to the texture map'),
 
         DeclareLaunchArgument(
@@ -95,14 +106,14 @@ def generate_launch_description():
             description='The absolute file path to the score trt engine'),
 
         DeclareLaunchArgument(
-            'rt_detr_model_file_path',
-            default_value='',
-            description='The absolute file path to the RT-DETR ONNX file'),
+            'yolov8_model_file_path',
+            default_value=YOLO_MODEL_PATH,
+            description='The absolute file path to the YOLOV8 ONNX file'),
 
         DeclareLaunchArgument(
-            'rt_detr_engine_file_path',
-            default_value='',
-            description='The absolute file path to the RT-DETR TensorRT engine file'),
+            'yolov8_engine_file_path',
+            default_value=YOLO_ENGINE_PATH,
+            description='The absolute file path to the YOLOV8 TensorRT engine file'),
 
         DeclareLaunchArgument(
             'launch_rviz',
@@ -124,10 +135,49 @@ def generate_launch_description():
     refine_engine_file_path = LaunchConfiguration('refine_engine_file_path')
     score_model_file_path = LaunchConfiguration('score_model_file_path')
     score_engine_file_path = LaunchConfiguration('score_engine_file_path')
-    rt_detr_model_file_path = LaunchConfiguration('rt_detr_model_file_path')
-    rt_detr_engine_file_path = LaunchConfiguration('rt_detr_engine_file_path')
+    yolov8_model_file_path = LaunchConfiguration('yolov8_model_file_path')
+    yolov8_engine_file_path = LaunchConfiguration('yolov8_engine_file_path')
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
+
+    if enable_rs:
+        # RealSense
+        realsense_config_file_path = os.path.join(
+            get_package_share_directory('isaac_ros_foundationpose'),
+            'config', 'realsense.yaml'
+        )
+
+        realsense_node = ComposableNode(
+            package='realsense2_camera',
+            plugin='realsense2_camera::RealSenseNodeFactory',
+            parameters=[realsense_config_file_path]
+        )
+
+    yolov8_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            yolov8_dir, 'launch', 'yolov8_tensor_rt.launch.py')]
+        ),
+        launch_arguments={
+            'model_file_path': yolov8_model_file_path,
+            'engine_file_path': yolov8_engine_file_path,
+            'input_tensor_name': '["input_tensor"]',
+            'input_binding_names': '["images"]',
+            'output_tensor_names': '["output_tensor"]',
+            'output_binding_names': '["output0"]',
+            'verbose': 'False',
+            'force_engine_update': 'False',
+            'confidence_threshold': '0.25',
+            'nms_threshold': '0.45',
+            'input_image_width': '1280',
+            'input_image_height': '720',
+            'network_image_width': '640',
+            'network_image_height': '640',
+            'image_mean': '[0.0, 0.0, 0.0]',
+            'image_stddev': '[1.0, 1.0, 1.0]',
+            'image_input_topic': '/color/image_raw',
+            'camera_info_input_topic': '/color/camera_info'
+        }.items(),
+    )
 
     # Drops hawk_expect_freq out of input_images_drop_freq RealSense messages
     drop_node = ComposableNode(
@@ -138,12 +188,13 @@ def generate_launch_description():
             'X': hawk_expect_freq,
             'Y': input_images_drop_freq,
             'mode': 'mono+depth',
-            'depth_format_string': 'nitros_image_mono16'
+            'depth_format_string': 'nitros_image_mono16',
+            'input_qos': 'SENSOR_DATA'
         }],
         remappings=[
-            ('image_1', '/camera/color/image_raw'),
-            ('camera_info_1', '/camera/color/camera_info'),
-            ('depth_1', '/camera/aligned_depth_to_color/image_raw'),
+            ('image_1', '/color/image_raw'),
+            ('camera_info_1', '/color/camera_info'),
+            ('depth_1', '/aligned_depth_to_color/image_raw'),
             ('image_1_drop', 'rgb/image_rect_color'),
             ('camera_info_1_drop', 'rgb/camera_info'),
             ('depth_1_drop', 'depth_uint16')
@@ -160,139 +211,23 @@ def generate_launch_description():
         ]
     )
 
-    # Resize and pad RealSense images to RT-DETR model input image size
-    # Resize from REALSENSE_IMAGE_WIDTH x REALSENSE_IMAGE_HEIGHT to
-    # REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO x
-    #   REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO
-    # output height constraint is not used since keep_aspect_ratio is True
-    resize_left_rt_detr_node = ComposableNode(
-        name='resize_left_rt_detr_node',
-        package='isaac_ros_image_proc',
-        plugin='nvidia::isaac_ros::image_proc::ResizeNode',
-        parameters=[{
-            'input_width': REALSENSE_IMAGE_WIDTH,
-            'input_height': REALSENSE_IMAGE_HEIGHT,
-            'output_width': RT_DETR_MODEL_INPUT_SIZE,
-            'output_height': RT_DETR_MODEL_INPUT_SIZE,
-            'keep_aspect_ratio': True,
-            'encoding_desired': 'rgb8',
-            'disable_padding': True
-        }],
-        remappings=[
-            ('image', 'rgb/image_rect_color'),
-            ('camera_info', 'rgb/camera_info'),
-            ('resize/image', 'color_image_resized'),
-            ('resize/camera_info', 'camera_info_resized')
-        ]
-    )
-    # Pad the image from REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO x
-    #   REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO
-    # to RT_DETR_MODEL_INPUT_WIDTH x RT_DETR_MODEL_INPUT_HEIGHT
-    pad_node = ComposableNode(
-        name='pad_node',
-        package='isaac_ros_image_proc',
-        plugin='nvidia::isaac_ros::image_proc::PadNode',
-        parameters=[{
-            'output_image_width': RT_DETR_MODEL_INPUT_SIZE,
-            'output_image_height': RT_DETR_MODEL_INPUT_SIZE,
-            'padding_type': 'BOTTOM_RIGHT'
-        }],
-        remappings=[(
-            'image', 'color_image_resized'
-        )]
-    )
-
-    # Convert image to tensor and reshape
-    image_to_tensor_node = ComposableNode(
-        name='image_to_tensor_node',
-        package='isaac_ros_tensor_proc',
-        plugin='nvidia::isaac_ros::dnn_inference::ImageToTensorNode',
-        parameters=[{
-            'scale': False,
-            'tensor_name': 'image',
-        }],
-        remappings=[
-            ('image', 'padded_image'),
-            ('tensor', 'normalized_tensor'),
-        ]
-    )
-    interleave_to_planar_node = ComposableNode(
-        name='interleaved_to_planar_node',
-        package='isaac_ros_tensor_proc',
-        plugin='nvidia::isaac_ros::dnn_inference::InterleavedToPlanarNode',
-        parameters=[{
-            'input_tensor_shape': [RT_DETR_MODEL_INPUT_SIZE,
-                                   RT_DETR_MODEL_INPUT_SIZE,
-                                   RT_DETR_MODEL_NUM_CHANNELS]
-        }],
-        remappings=[
-            ('interleaved_tensor', 'normalized_tensor')
-        ]
-    )
-    reshape_node = ComposableNode(
-        name='reshape_node',
-        package='isaac_ros_tensor_proc',
-        plugin='nvidia::isaac_ros::dnn_inference::ReshapeNode',
-        parameters=[{
-            'output_tensor_name': 'input_tensor',
-            'input_tensor_shape': [RT_DETR_MODEL_NUM_CHANNELS,
-                                   RT_DETR_MODEL_INPUT_SIZE,
-                                   RT_DETR_MODEL_INPUT_SIZE],
-            'output_tensor_shape': [1, RT_DETR_MODEL_NUM_CHANNELS,
-                                    RT_DETR_MODEL_INPUT_SIZE,
-                                    RT_DETR_MODEL_INPUT_SIZE]
-        }],
-        remappings=[
-            ('tensor', 'planar_tensor')
-        ],
-    )
-    rtdetr_preprocessor_node = ComposableNode(
-        name='rtdetr_preprocessor',
-        package='isaac_ros_rtdetr',
-        plugin='nvidia::isaac_ros::rtdetr::RtDetrPreprocessorNode',
-        remappings=[
-            ('encoded_tensor', 'reshaped_tensor')
-        ]
-    )
-
-    # RT-DETR objection detection pipeline
-    tensor_rt_node = ComposableNode(
-        name='tensor_rt',
-        package='isaac_ros_tensor_rt',
-        plugin='nvidia::isaac_ros::dnn_inference::TensorRTNode',
-        parameters=[{
-            'model_file_path': rt_detr_model_file_path,
-            'engine_file_path': rt_detr_engine_file_path,
-            'output_binding_names': ['labels', 'boxes', 'scores'],
-            'output_tensor_names': ['labels', 'boxes', 'scores'],
-            'input_tensor_names': ['images', 'orig_target_sizes'],
-            'input_binding_names': ['images', 'orig_target_sizes'],
-            'force_engine_update': False
-        }]
-    )
-    rtdetr_decoder_node = ComposableNode(
-        name='rtdetr_decoder',
-        package='isaac_ros_rtdetr',
-        plugin='nvidia::isaac_ros::rtdetr::RtDetrDecoderNode',
-    )
-
     # Create a binary segmentation mask from a Detection2DArray published by RT-DETR.
-    # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO) x
-    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO)
+    # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
+    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)
     detection2_d_to_mask_node = ComposableNode(
         name='detection2_d_to_mask',
         package='isaac_ros_foundationpose',
         plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
         parameters=[{
-            'mask_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO),
-            'mask_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO)}],
+            'mask_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO),
+            'mask_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)}],
         remappings=[('detection2_d_array', 'detections_output'),
                     ('segmentation', 'rt_detr_segmentation')])
 
     # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
     # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
-    # Resize from int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO) x
-    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO) to
+    # Resize from int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
+    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO) to
     # ESS_MODEL_IMAGE_WIDTH x ESS_MODEL_IMAGE_HEIGHT
     # output height constraint is used since keep_aspect_ratio is False
     # and the image is padded
@@ -301,8 +236,8 @@ def generate_launch_description():
         package='isaac_ros_image_proc',
         plugin='nvidia::isaac_ros::image_proc::ResizeNode',
         parameters=[{
-            'input_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_RT_DETR_RATIO),
-            'input_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_RT_DETR_RATIO),
+            'input_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO),
+            'input_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO),
             'output_width': REALSENSE_IMAGE_WIDTH,
             'output_height': REALSENSE_IMAGE_HEIGHT,
             'keep_aspect_ratio': False,
@@ -376,19 +311,14 @@ def generate_launch_description():
     nodes = [
         drop_node,
         convert_metric_node,
-        resize_left_rt_detr_node,
-        pad_node,
-        image_to_tensor_node,
-        interleave_to_planar_node,
-        reshape_node,
-        rtdetr_preprocessor_node,
-        tensor_rt_node,
-        rtdetr_decoder_node,
         detection2_d_to_mask_node,
         resize_mask_node,
         foundationpose_node,
         resize_left_viz
     ]
+
+    if enable_rs:
+        nodes.append(realsense_node)
 
     foundationpose_container = ComposableNodeContainer(
         name=container_name,
@@ -399,5 +329,5 @@ def generate_launch_description():
         output='screen'
     )
 
-    return launch.LaunchDescription(launch_args + [foundationpose_container,
-                                                   rviz_node])
+    return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, yolov8_launch])
+    # return launch.LaunchDescription(launch_args + [yolov8_launch])

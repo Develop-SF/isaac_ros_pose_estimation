@@ -54,6 +54,11 @@ def generate_launch_description():
 
     launch_args = [
         DeclareLaunchArgument(
+            "enable_rs",
+            default_value='False',
+            description='Enable the realsense node'),
+
+        DeclareLaunchArgument(
             'hawk_expect_freq',
             default_value=str(HAWK_EXPECT_FREQ),
             description='Number of Realsense messages to be dropped in 1 second'),
@@ -114,6 +119,7 @@ def generate_launch_description():
             description='Name for ComposableNodeContainer'),
     ]
 
+    enable_rs = LaunchConfiguration('enable_rs')
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
     input_images_drop_freq = LaunchConfiguration('input_images_drop_freq')
     mesh_file_path = LaunchConfiguration('mesh_file_path')
@@ -127,17 +133,18 @@ def generate_launch_description():
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
 
-    # RealSense
-    realsense_config_file_path = os.path.join(
-        get_package_share_directory('isaac_ros_foundationpose'),
-        'config', 'realsense.yaml'
-    )
+    if enable_rs:
+        # RealSense
+        realsense_config_file_path = os.path.join(
+            get_package_share_directory('isaac_ros_foundationpose'),
+            'config', 'realsense.yaml'
+        )
 
-    realsense_node = ComposableNode(
-        package='realsense2_camera',
-        plugin='realsense2_camera::RealSenseNodeFactory',
-        parameters=[realsense_config_file_path]
-    )
+        realsense_node = ComposableNode(
+            package='realsense2_camera',
+            plugin='realsense2_camera::RealSenseNodeFactory',
+            parameters=[realsense_config_file_path]
+        )
 
     # Drops hawk_expect_freq out of input_images_drop_freq RealSense messages
     drop_node = ComposableNode(
@@ -151,12 +158,12 @@ def generate_launch_description():
             'depth_format_string': 'nitros_image_mono16'
         }],
         remappings=[
-            ('image_1', '/color/image_raw'),
-            ('camera_info_1', '/color/camera_info'),
-            ('depth_1', '/aligned_depth_to_color/image_raw'),
+            ('image_1', '/camera/color/image_raw'),
+            ('camera_info_1', '/camera/color/camera_info'),
+            ('depth_1', '/camera/aligned_depth_to_color/image_raw'),
             ('image_1_drop', 'rgb/image_rect_color'),
             ('camera_info_1_drop', 'rgb/camera_info'),
-            ('depth_1_drop', 'depth_uint16'),
+            ('depth_1_drop', 'depth_uint16')
         ]
     )
 
@@ -383,28 +390,32 @@ def generate_launch_description():
         arguments=['-d', rviz_config_path],
         condition=IfCondition(launch_rviz))
 
+    nodes = [
+        drop_node,
+        convert_metric_node,
+        resize_left_rt_detr_node,
+        pad_node,
+        image_to_tensor_node,
+        interleave_to_planar_node,
+        reshape_node,
+        rtdetr_preprocessor_node,
+        tensor_rt_node,
+        rtdetr_decoder_node,
+        detection2_d_to_mask_node,
+        resize_mask_node,
+        foundationpose_node,
+        resize_left_viz
+    ]
+
+    # if enable_rs:
+    #     nodes.append(realsense_node)
+
     foundationpose_container = ComposableNodeContainer(
         name=container_name,
         namespace='',
         package='rclcpp_components',
         executable='component_container_mt',
-        composable_node_descriptions=[
-            realsense_node,
-            drop_node,
-            convert_metric_node,
-            resize_left_rt_detr_node,
-            pad_node,
-            image_to_tensor_node,
-            interleave_to_planar_node,
-            reshape_node,
-            rtdetr_preprocessor_node,
-            tensor_rt_node,
-            rtdetr_decoder_node,
-            detection2_d_to_mask_node,
-            resize_mask_node,
-            foundationpose_node,
-            resize_left_viz
-        ],
+        composable_node_descriptions=nodes,
         output='screen'
     )
 
