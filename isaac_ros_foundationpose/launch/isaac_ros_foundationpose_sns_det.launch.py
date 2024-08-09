@@ -168,10 +168,10 @@ def generate_launch_description():
             'force_engine_update': 'False',
             'confidence_threshold': '0.25',
             'nms_threshold': '0.45',
-            'input_image_width': '1280',
-            'input_image_height': '720',
-            'network_image_width': '640',
-            'network_image_height': '640',
+            'input_image_width': str(REALSENSE_IMAGE_WIDTH),
+            'input_image_height': str(REALSENSE_IMAGE_HEIGHT),
+            'network_image_width': str(YOLOV8_MODEL_INPUT_SIZE),
+            'network_image_height': str(YOLOV8_MODEL_INPUT_SIZE),
             'image_mean': '[0.0, 0.0, 0.0]',
             'image_stddev': '[1.0, 1.0, 1.0]',
             'image_input_topic': '/color/image_raw',
@@ -211,7 +211,7 @@ def generate_launch_description():
         ]
     )
 
-    # Create a binary segmentation mask from a Detection2DArray published by RT-DETR.
+    # Create a binary segmentation mask from a Detection2DArray published by YOLOV8.
     # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
     # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)
     detection2_d_to_mask_node = ComposableNode(
@@ -219,10 +219,12 @@ def generate_launch_description():
         package='isaac_ros_foundationpose',
         plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
         parameters=[{
-            'mask_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO),
-            'mask_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)}],
+            'mask_width': YOLOV8_MODEL_INPUT_SIZE,
+            'mask_height': YOLOV8_MODEL_INPUT_SIZE,
+            'target_class_id': 0
+        }],
         remappings=[('detection2_d_array', 'detections_output'),
-                    ('segmentation', 'rt_detr_segmentation')])
+                    ('segmentation', 'yolo_segmentation')])
 
     # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
     # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
@@ -240,12 +242,12 @@ def generate_launch_description():
             'input_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO),
             'output_width': REALSENSE_IMAGE_WIDTH,
             'output_height': REALSENSE_IMAGE_HEIGHT,
-            'keep_aspect_ratio': False,
+            'keep_aspect_ratio': True,
             'disable_padding': False
         }],
         remappings=[
-            ('image', 'rt_detr_segmentation'),
-            ('camera_info', 'camera_info_resized'),
+            ('image', 'yolo_segmentation'),
+            ('camera_info', '/yolov8_encoder/resize/camera_info'),
             ('resize/image', 'segmentation'),
             ('resize/camera_info', 'camera_info_segmentation')
         ]
