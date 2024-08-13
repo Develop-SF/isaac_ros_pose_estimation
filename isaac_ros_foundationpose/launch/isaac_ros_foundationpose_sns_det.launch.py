@@ -55,14 +55,14 @@ def generate_launch_description():
     """Generate launch description for testing relevant nodes."""
     rviz_config_path = os.path.join(
         get_package_share_directory('isaac_ros_foundationpose'),
-        'rviz', 'foundationpose_realsense.rviz')
+        'rviz', 'sns_foundationpose.rviz')
     
     yolov8_dir = get_package_share_directory('isaac_ros_yolov8')
 
     launch_args = [
         DeclareLaunchArgument(
             "enable_rs",
-            default_value='False',
+            default_value="True",
             description='Enable the realsense node'),
 
         DeclareLaunchArgument(
@@ -127,6 +127,7 @@ def generate_launch_description():
     ]
 
     enable_rs = LaunchConfiguration('enable_rs')
+    enable_rs_bool = enable_rs.lower() == 'true'
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
     input_images_drop_freq = LaunchConfiguration('input_images_drop_freq')
     mesh_file_path = LaunchConfiguration('mesh_file_path')
@@ -140,7 +141,7 @@ def generate_launch_description():
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
 
-    if enable_rs:
+    if enable_rs_bool:
         # RealSense
         realsense_config_file_path = os.path.join(
             get_package_share_directory('isaac_ros_foundationpose'),
@@ -219,8 +220,8 @@ def generate_launch_description():
         package='isaac_ros_foundationpose',
         plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
         parameters=[{
-            'mask_width': YOLOV8_MODEL_INPUT_SIZE,
-            'mask_height': YOLOV8_MODEL_INPUT_SIZE,
+            'mask_width': REALSENSE_IMAGE_WIDTH,
+            'mask_height': REALSENSE_IMAGE_HEIGHT,
             'target_class_id': 0
         }],
         remappings=[('detection2_d_array', 'detections_output'),
@@ -319,7 +320,7 @@ def generate_launch_description():
         resize_left_viz
     ]
 
-    if enable_rs:
+    if enable_rs_bool:
         nodes.append(realsense_node)
 
     foundationpose_container = ComposableNodeContainer(
