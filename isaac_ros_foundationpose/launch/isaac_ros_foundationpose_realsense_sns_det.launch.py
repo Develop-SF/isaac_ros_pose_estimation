@@ -61,11 +61,6 @@ def generate_launch_description():
 
     launch_args = [
         DeclareLaunchArgument(
-            "enable_rs",
-            default_value="True",
-            description='Enable the realsense node'),
-
-        DeclareLaunchArgument(
             'hawk_expect_freq',
             default_value=str(HAWK_EXPECT_FREQ),
             description='Number of Realsense messages to be dropped in 1 second'),
@@ -126,8 +121,6 @@ def generate_launch_description():
             description='Name for ComposableNodeContainer'),
     ]
 
-    enable_rs = LaunchConfiguration('enable_rs')
-    enable_rs_bool = enable_rs.lower() == 'true'
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
     input_images_drop_freq = LaunchConfiguration('input_images_drop_freq')
     mesh_file_path = LaunchConfiguration('mesh_file_path')
@@ -141,18 +134,17 @@ def generate_launch_description():
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
 
-    if enable_rs_bool:
-        # RealSense
-        realsense_config_file_path = os.path.join(
-            get_package_share_directory('isaac_ros_foundationpose'),
-            'config', 'realsense.yaml'
-        )
+    # RealSense
+    realsense_config_file_path = os.path.join(
+        get_package_share_directory('isaac_ros_foundationpose'),
+        'config', 'realsense.yaml'
+    )
 
-        realsense_node = ComposableNode(
-            package='realsense2_camera',
-            plugin='realsense2_camera::RealSenseNodeFactory',
-            parameters=[realsense_config_file_path]
-        )
+    realsense_node = ComposableNode(
+        package='realsense2_camera',
+        plugin='realsense2_camera::RealSenseNodeFactory',
+        parameters=[realsense_config_file_path]
+    )
 
     yolov8_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
@@ -317,11 +309,9 @@ def generate_launch_description():
         detection2_d_to_mask_node,
         resize_mask_node,
         foundationpose_node,
-        resize_left_viz
+        resize_left_viz, 
+        realsense_node
     ]
-
-    if enable_rs_bool:
-        nodes.append(realsense_node)
 
     foundationpose_container = ComposableNodeContainer(
         name=container_name,
@@ -333,4 +323,3 @@ def generate_launch_description():
     )
 
     return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, yolov8_launch])
-    # return launch.LaunchDescription(launch_args + [yolov8_launch])
