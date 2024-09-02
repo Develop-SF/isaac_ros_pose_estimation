@@ -139,7 +139,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'depth_input_topic',
-            default_value='/aligned_depth_to_color/image_raw',
+            default_value='/camera/aligned_depth_to_color/image_raw',
             description='The input topic for aligned depth images')
     ]
 
