@@ -41,7 +41,7 @@ VISUALIZATION_DOWNSCALING_FACTOR = 10
 
 REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
-isaac_ros_assets_path = '/workspace/isaac_ros-dev/isaac_ros_assets'
+isaac_ros_assets_path = '/workspaces/isaac_ros-dev/isaac_ros_assets'
 
 MESH_FILE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj')
 TEXTURE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png')
