@@ -133,6 +133,8 @@ def generate_launch_description():
     yolov8_engine_file_path = LaunchConfiguration('yolov8_engine_file_path')
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
+    image_input_topic = LaunchConfiguration('image_input_topic')
+    camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
 
     # RealSense
     realsense_config_file_path = os.path.join(
@@ -167,8 +169,8 @@ def generate_launch_description():
             'network_image_height': str(YOLOV8_MODEL_INPUT_SIZE),
             'image_mean': '[0.0, 0.0, 0.0]',
             'image_stddev': '[1.0, 1.0, 1.0]',
-            'image_input_topic': '/color/image_raw',
-            'camera_info_input_topic': '/color/camera_info'
+            'image_input_topic': image_input_topic,
+            'camera_info_input_topic': camera_info_input_topic
         }.items(),
     )
 
@@ -185,8 +187,8 @@ def generate_launch_description():
             'input_qos': 'SENSOR_DATA'
         }],
         remappings=[
-            ('image_1', '/color/image_raw'),
-            ('camera_info_1', '/color/camera_info'),
+            ('image_1', image_input_topic),
+            ('camera_info_1', camera_info_input_topic),
             ('depth_1', '/aligned_depth_to_color/image_raw'),
             ('image_1_drop', 'rgb/image_rect_color'),
             ('camera_info_1_drop', 'rgb/camera_info'),
