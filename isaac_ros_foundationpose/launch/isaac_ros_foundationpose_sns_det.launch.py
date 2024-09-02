@@ -41,7 +41,7 @@ VISUALIZATION_DOWNSCALING_FACTOR = 10
 
 REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
-isaac_ros_assets_path = get_package_share_directory('isaac_ros_assets')
+isaac_ros_assets_path = '/workspace/isaac_ros-dev/isaac_ros_assets'
 
 MESH_FILE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj')
 TEXTURE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png')
@@ -157,7 +157,7 @@ def generate_launch_description():
     container_name = LaunchConfiguration('container_name')
     image_input_topic = LaunchConfiguration('image_input_topic')
     camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
-    depth_inpur_topic = LaunchConfiguration('depth_inpur_topic')
+    depth_input_topic = LaunchConfiguration('depth_input_topic')
 
     yolov8_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
@@ -200,7 +200,7 @@ def generate_launch_description():
         remappings=[
             ('image_1', image_input_topic),
             ('camera_info_1', camera_info_input_topic),
-            ('depth_1', depth_inpur_topic),
+            ('depth_1', depth_input_topic),
             ('image_1_drop', 'rgb/image_rect_color'),
             ('camera_info_1_drop', 'rgb/camera_info'),
             ('depth_1_drop', 'depth_uint16')
