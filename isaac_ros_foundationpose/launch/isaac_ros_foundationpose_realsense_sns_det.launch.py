@@ -41,15 +41,17 @@ VISUALIZATION_DOWNSCALING_FACTOR = 10
 
 REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
-MESH_FILE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj'
-TEXTURE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png'
+isaac_ros_assets_path = get_package_share_directory('isaac_ros_assets')
 
-REFINE_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/refine_model.onnx'
-REFINE_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/refine_trt_engine.plan'
-SCORE_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/score_model.onnx'
-SCORE_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/foundationpose/score_trt_engine.plan'
-YOLO_MODEL_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/yolov8/best_grape_juice.onnx'
-YOLO_ENGINE_PATH = '/workspaces/isaac_ros-dev/isaac_ros_assets/models/yolov8/best_grape_juice.plan'
+MESH_FILE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj')
+TEXTURE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png')
+
+REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_model.onnx')
+REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
+SCORE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_model.onnx')
+SCORE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_trt_engine.plan')
+YOLO_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/best_grape_juice.onnx')
+YOLO_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/best_grape_juice.plan')
 
 def generate_launch_description():
     """Generate launch description for testing relevant nodes."""
@@ -119,6 +121,21 @@ def generate_launch_description():
             'container_name',
             default_value='foundationpose_container',
             description='Name for ComposableNodeContainer'),
+
+        DeclareLaunchArgument(
+            'image_input_topic',
+            default_value='/color/image_raw',
+            description='The input topic for color images'),
+
+        DeclareLaunchArgument(
+            'camera_info_input_topic',
+            default_value='/color/camera_info',
+            description='The input topic for camera information'),
+
+        DeclareLaunchArgument(
+            'depth_input_topic',
+            default_value='/aligned_depth_to_color/image_raw',
+            description='The input topic for aligned depth images')
     ]
 
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
@@ -135,6 +152,7 @@ def generate_launch_description():
     container_name = LaunchConfiguration('container_name')
     image_input_topic = LaunchConfiguration('image_input_topic')
     camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
+    depth_input_topic = LaunchConfiguration('depth_input_topic')
 
     # RealSense
     realsense_config_file_path = os.path.join(
@@ -170,7 +188,8 @@ def generate_launch_description():
             'image_mean': '[0.0, 0.0, 0.0]',
             'image_stddev': '[1.0, 1.0, 1.0]',
             'image_input_topic': image_input_topic,
-            'camera_info_input_topic': camera_info_input_topic
+            'camera_info_input_topic': camera_info_input_topic,
+            'depth_input_topic': depth_input_topic
         }.items(),
     )
 
@@ -189,7 +208,7 @@ def generate_launch_description():
         remappings=[
             ('image_1', image_input_topic),
             ('camera_info_1', camera_info_input_topic),
-            ('depth_1', '/aligned_depth_to_color/image_raw'),
+            ('depth_1', depth_input_topic),
             ('image_1_drop', 'rgb/image_rect_color'),
             ('camera_info_1_drop', 'rgb/camera_info'),
             ('depth_1_drop', 'depth_uint16')
