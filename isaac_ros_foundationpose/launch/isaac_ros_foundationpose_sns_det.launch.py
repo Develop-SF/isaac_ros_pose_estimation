@@ -309,6 +309,31 @@ def generate_launch_description():
             ('pose_estimation/segmentation', 'segmentation'),
             ('pose_estimation/output', 'object_pose')])
 
+    selector_node = ComposableNode(
+        name='selector_node',
+        package='isaac_ros_foundationpose',
+        plugin='nvidia::isaac_ros::foundationpose::Selector',
+        parameters=[{
+             # Expect to reset after the rosbag play complete
+            'reset_period': 65000
+        }])
+    
+    foundationpose_tracking_node = ComposableNode(
+        name='foundationpose_tracking_node',
+        package='isaac_ros_foundationpose',
+        plugin='nvidia::isaac_ros::foundationpose::FoundationPoseTrackingNode',
+        parameters=[{
+            'mesh_file_path': mesh_file_path,
+            'texture_path': texture_path,
+
+            'refine_model_file_path': refine_model_file_path,
+            'refine_engine_file_path': refine_engine_file_path,
+            'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
+            'refine_input_binding_names': ['input1', 'input2'],
+            'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
+            'refine_output_binding_names': ['output1', 'output2'],
+        }])
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -322,8 +347,9 @@ def generate_launch_description():
         detection2_d_to_mask_node,
         resize_mask_node,
         foundationpose_node,
-        resize_left_viz
-        # realsense_node
+        resize_left_viz,
+        selector_node,
+        foundationpose_tracking_node
     ]
 
     foundationpose_container = ComposableNodeContainer(

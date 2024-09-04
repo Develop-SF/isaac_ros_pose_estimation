@@ -41,7 +41,7 @@ VISUALIZATION_DOWNSCALING_FACTOR = 10
 
 REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
-isaac_ros_assets_path = get_package_share_directory('isaac_ros_assets')
+isaac_ros_assets_path = '/workspaces/isaac_ros-dev/isaac_ros_assets'
 
 MESH_FILE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj')
 TEXTURE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png')
@@ -316,6 +316,31 @@ def generate_launch_description():
             ('pose_estimation/camera_info', 'rgb/camera_info'),
             ('pose_estimation/segmentation', 'segmentation'),
             ('pose_estimation/output', 'output')])
+    
+    selector_node = ComposableNode(
+        name='selector_node',
+        package='isaac_ros_foundationpose',
+        plugin='nvidia::isaac_ros::foundationpose::Selector',
+        parameters=[{
+             # Expect to reset after the rosbag play complete
+            'reset_period': 65000
+        }])
+    
+    foundationpose_tracking_node = ComposableNode(
+        name='foundationpose_tracking_node',
+        package='isaac_ros_foundationpose',
+        plugin='nvidia::isaac_ros::foundationpose::FoundationPoseTrackingNode',
+        parameters=[{
+            'mesh_file_path': mesh_file_path,
+            'texture_path': texture_path,
+
+            'refine_model_file_path': refine_model_file_path,
+            'refine_engine_file_path': refine_engine_file_path,
+            'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
+            'refine_input_binding_names': ['input1', 'input2'],
+            'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
+            'refine_output_binding_names': ['output1', 'output2'],
+        }])
 
     rviz_node = Node(
         package='rviz2',
@@ -331,7 +356,9 @@ def generate_launch_description():
         resize_mask_node,
         foundationpose_node,
         resize_left_viz, 
-        realsense_node
+        realsense_node,
+        selector_node,
+        foundationpose_tracking_node
     ]
 
     foundationpose_container = ComposableNodeContainer(
