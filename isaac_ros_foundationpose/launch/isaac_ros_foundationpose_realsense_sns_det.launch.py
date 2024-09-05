@@ -324,7 +324,11 @@ def generate_launch_description():
         parameters=[{
              # Expect to reset after the rosbag play complete
             'reset_period': 65000
-        }])
+        }],
+        remappings=[
+            ('image', 'rgb/image_rect_color'),
+            ('camera_info', 'rgb/camera_info')
+        ])
     
     foundationpose_tracking_node = ComposableNode(
         name='foundationpose_tracking_node',
