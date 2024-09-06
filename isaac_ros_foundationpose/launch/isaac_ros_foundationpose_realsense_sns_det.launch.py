@@ -344,7 +344,10 @@ def generate_launch_description():
             'refine_input_binding_names': ['input1', 'input2'],
             'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
             'refine_output_binding_names': ['output1', 'output2'],
-        }])
+        }],
+        remappings=[
+            ('tracking/output', 'object_poses'),
+        ])
 
     rviz_node = Node(
         package='rviz2',
