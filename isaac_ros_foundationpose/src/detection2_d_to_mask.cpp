@@ -67,7 +67,11 @@ public:
 
   void boundingBoxCallback(const vision_msgs::msg::Detection2D::SharedPtr msg)
   {
+    this->get_parameter("target_class_id", target_class_id_);
+
     std::string target_class_id_str = std::to_string(target_class_id_);
+
+    RCLCPP_INFO_STREAM(this->get_logger(), "target class id:" << target_class_id_str);
 
     for (const auto & result : msg->results) {
       if (result.hypothesis.class_id == target_class_id_str) {
@@ -97,7 +101,9 @@ public:
 
   void boundingBoxArrayCallback(const vision_msgs::msg::Detection2DArray::SharedPtr msg)
   {
+    this->get_parameter("target_class_id", target_class_id_);
     std::string target_class_id_str = std::to_string(target_class_id_);
+    RCLCPP_INFO_STREAM(this->get_logger(), "target class id:" << target_class_id_str);
 
     // Find the detection bounding box with the highest confidence
     float max_confidence = 0;

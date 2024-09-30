@@ -155,15 +155,29 @@ def generate_launch_description():
     depth_input_topic = LaunchConfiguration('depth_input_topic')
 
     # RealSense
-    realsense_config_file_path = os.path.join(
-        get_package_share_directory('isaac_ros_foundationpose'),
-        'config', 'realsense.yaml'
-    )
+    # realsense_config_file_path = os.path.join(
+    #     get_package_share_directory('isaac_ros_foundationpose'),
+    #     'config', 'realsense.yaml'
+    # )
 
-    realsense_node = ComposableNode(
-        package='realsense2_camera',
-        plugin='realsense2_camera::RealSenseNodeFactory',
-        parameters=[realsense_config_file_path]
+    # realsense_node = ComposableNode(
+    #     package='realsense2_camera',
+    #     plugin='realsense2_camera::RealSenseNodeFactory',
+    #     parameters=[realsense_config_file_path]
+    # )
+    realsense_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [os.path.join(
+                get_package_share_directory('realsense2_camera'),
+                'launch',
+                'rs_launch.py',
+                )
+            ]
+        ),
+        launch_arguments={
+            "pointcloud.enable": "true",
+            "align_depth.enable": "true"
+        }.items(),
     )
 
     yolov8_launch = IncludeLaunchDescription(
@@ -235,7 +249,7 @@ def generate_launch_description():
         parameters=[{
             'mask_width': REALSENSE_IMAGE_WIDTH,
             'mask_height': REALSENSE_IMAGE_HEIGHT,
-            'target_class_id': 0
+            'target_class_id': 2
         }],
         remappings=[('detection2_d_array', 'detections_output'),
                     ('segmentation', 'yolo_segmentation')])
@@ -363,7 +377,7 @@ def generate_launch_description():
         resize_mask_node,
         foundationpose_node,
         resize_left_viz, 
-        realsense_node,
+        # realsense_node,
         selector_node,
         foundationpose_tracking_node
     ]
@@ -377,4 +391,4 @@ def generate_launch_description():
         output='screen'
     )
 
-    return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, yolov8_launch])
+    return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, realsense_node, yolov8_launch])
