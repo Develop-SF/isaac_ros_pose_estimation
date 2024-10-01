@@ -229,7 +229,7 @@ def generate_launch_description():
             'mask_height': REALSENSE_IMAGE_HEIGHT,
             'target_class_id': 0
         }],
-        remappings=[('detection2_d_array', 'detections_output'),
+        remappings=[('detection2_d_array', '/fused_detections'),
                     ('segmentation', 'yolo_segmentation')])
 
     # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
