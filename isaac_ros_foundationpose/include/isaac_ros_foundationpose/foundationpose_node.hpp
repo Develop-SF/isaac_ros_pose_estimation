@@ -62,6 +62,12 @@ private:
   // Path to the mesh files
   const std::string mesh_file_path_;
   const std::string texture_path_;
+  const std::string current_mesh_file_path_;
+  const std::string current_texture_path_;
+
+  void parameterCallback(const std::vector<rclcpp::Parameter> & parameters);
+  void updateMeshPath();
+  void updateTexturePath();
 
   const float min_depth_;
   const float max_depth_;

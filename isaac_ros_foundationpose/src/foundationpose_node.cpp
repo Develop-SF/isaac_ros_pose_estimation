@@ -153,7 +153,6 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
     declare_parameter<std::string>("score_model_file_path", "/tmp/score_model.onnx")),
   score_engine_file_path_(
     declare_parameter<std::string>("score_engine_file_path", "/tmp/score_trt_engine.plan")),
-
   refine_input_tensor_names_(
     declare_parameter<StringList>("refine_input_tensor_names", StringList())),
   refine_input_binding_names_(
@@ -162,7 +161,6 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
     declare_parameter<StringList>("score_input_tensor_names", StringList())),
   score_input_binding_names_(
     declare_parameter<StringList>("score_input_binding_names", StringList())),
-
   refine_output_tensor_names_(
     declare_parameter<StringList>("refine_output_tensor_names", StringList())),
   refine_output_binding_names_(
@@ -171,8 +169,9 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
     declare_parameter<StringList>("score_output_tensor_names", StringList())),
   score_output_binding_names_(
     declare_parameter<StringList>("score_output_binding_names", StringList())),
-
-  tf_frame_name_(declare_parameter<std::string>("tf_frame_name", "fp_object"))
+  tf_frame_name_(declare_parameter<std::string>("tf_frame_name", "fp_object")),
+  current_mesh_file_path_(mesh_file_path_),
+  current_texture_path_(texture_path_)
 {
   RCLCPP_DEBUG(get_logger(), "[FoundationPoseNode] Constructor");
 
@@ -252,6 +251,9 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   registerSupportedType<nvidia::isaac_ros::nitros::NitrosTensorList>();
 
   startNitrosNode();
+
+  this->register_param_change_callback(
+    std::bind(&FoundationPoseNode::parameterCallback, this, std::placeholders::_1));
 }
 
 FoundationPoseNode::~FoundationPoseNode() = default;
@@ -303,9 +305,6 @@ void FoundationPoseNode::postLoadGraphCallback()
 
   getNitrosContext().setParameterStr(
     "render_score", "nvidia::isaac_ros::FoundationposeRender", "texture_path", texture_path_);
-
-  getNitrosContext().setParameterStr(
-    "decoder", "nvidia::isaac_ros::FoundationposeDecoder", "mesh_file_path", mesh_file_path_);
 
   getNitrosContext().setParameterStr(
     "decoder", "nvidia::isaac_ros::FoundationposeDecoder", "mesh_file_path", mesh_file_path_);
@@ -387,6 +386,9 @@ void FoundationPoseNode::postLoadGraphCallback()
   getNitrosContext().setParameter1DStrVector(
     "score_inference", "nvidia::gxf::TensorRtInference", "output_binding_names",
     score_output_binding_names_);
+
+  updateMeshPath();
+  updateTexturePath();
 }
 
 void FoundationPoseNode::FoundationPoseDetectionCallback(
@@ -443,6 +445,43 @@ void FoundationPoseNode::FoundationPoseDetectionCallback(
 
     tf_broadcaster_->sendTransform(transform_stamped);
   }
+}
+
+void FoundationPoseNode::parameterCallback(
+  const std::vector<rclcpp::Parameter> & parameters)
+{
+  for (const auto & param : parameters) {
+    if (param.get_name() == "mesh_file_path") {
+      current_mesh_file_path_ = param.as_string();
+      RCLCPP_INFO(get_logger(), "Updated mesh file path: %s", current_mesh_file_path_.c_str());
+      updateMeshPath();
+    }
+    if (param.get_name() == "texture_path") {
+      current_texture_path_ = param.as_string();
+      RCLCPP_INFO(get_logger(), "Updated texture path: %s", current_texture_path_.c_str());
+      updateTexturePath();
+    }
+  }
+}
+
+void FoundationPoseNode::updateMeshPath()
+{
+  getNitrosContext().setParameterStr(
+    "render", "nvidia::isaac_ros::FoundationposeRender", "mesh_file_path", current_mesh_file_path_);
+  getNitrosContext().setParameterStr(
+    "render_score", "nvidia::isaac_ros::FoundationposeRender", "mesh_file_path", current_mesh_file_path_);
+  getNitrosContext().setParameterStr(
+    "decoder", "nvidia::isaac_ros::FoundationposeDecoder", "mesh_file_path", current_mesh_file_path_);
+  getNitrosContext().setParameterStr(
+    "transform", "nvidia::isaac_ros::FoundationposeTransformation", "mesh_file_path", current_mesh_file_path_);
+}
+
+void FoundationPoseNode::updateTexturePath()
+{
+  getNitrosContext().setParameterStr(
+    "render", "nvidia::isaac_ros::FoundationposeRender", "texture_path", current_texture_path_);
+  getNitrosContext().setParameterStr(
+    "render_score", "nvidia::isaac_ros::FoundationposeRender", "texture_path", current_texture_path_);
 }
 
 }  // namespace foundationpose
