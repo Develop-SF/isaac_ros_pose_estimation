@@ -48,24 +48,16 @@ public:
   void postLoadGraphCallback() override;
 
   void FoundationPoseDetectionCallback(const gxf_context_t context, nitros::NitrosTypeBase & msg);
+  void set_on_parameters_set_callback(rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);  
 
 private:
   // The name of the YAML configuration file
   const std::string configuration_file_;
-  uint32_t max_hypothesis_;
-  uint32_t resized_image_width_;
-  uint32_t resized_image_height_;
-  float refine_crop_ratio_;
-  float score_crop_ratio_;
-  float rot_normalizer_;
-
-  // Path to the mesh files
+  // The path of the mesh file and texture file
   const std::string mesh_file_path_;
   const std::string texture_path_;
-
-  const float min_depth_;
-  const float max_depth_;
-  const int32_t refine_iterations_;
+  // The name of the TF frame
+  const std::string tf_frame_name_;
 
   // Models file path
   const std::string refine_model_file_path_;
@@ -85,7 +77,25 @@ private:
   const StringList score_output_tensor_names_;
   const StringList score_output_binding_names_;
 
-  const std::string tf_frame_name_;
+  // The current path of the mesh file and texture file
+  std::string current_mesh_file_path_;
+  std::string current_texture_path_;
+
+  uint32_t max_hypothesis_;
+  uint32_t resized_image_width_;
+  uint32_t resized_image_height_;
+  float refine_crop_ratio_;
+  float score_crop_ratio_;
+  float rot_normalizer_;
+  const float min_depth_;
+  const float max_depth_;
+  const int32_t refine_iterations_;
+
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+  
+  void parameterCallback(const std::vector<rclcpp::Parameter> & parameters);
+  void updateMeshPath();
+  void updateTexturePath();
 };
 
 }  // namespace foundationpose
