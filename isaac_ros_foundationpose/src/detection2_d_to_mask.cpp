@@ -114,10 +114,12 @@ public:
       // Iterate through all the hypotheses for this detection
       // and find the one with the highest confidence
       for (auto result : detection.results) {
-        if (result.hypothesis.class_id == target_class_id_str && result.hypothesis.score > max_confidence) {
-          max_confidence = result.hypothesis.score;
-          max_confidence_detection = detection;
-        }
+        // if (result.hypothesis.class_id == target_class_id_str && result.hypothesis.score > max_confidence) {
+        //   max_confidence = result.hypothesis.score;
+        //   max_confidence_detection = detection;
+        // }
+        max_confidence = result.hypothesis.score;
+        max_confidence_detection = detection;
       }
     }
 
