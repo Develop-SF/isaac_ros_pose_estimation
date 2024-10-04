@@ -203,6 +203,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   rcl_params_t * foundationpose_params = rcl_yaml_node_struct_init(rcutils_get_default_allocator());
   rcl_parse_yaml_file(yaml_path.c_str(), foundationpose_params);
 
+  // Get max_hypothesis parameter
   rcl_variant_t * max_hypothesis = rcl_yaml_node_struct_get(
     "foundationpose", "max_hypothesis", foundationpose_params);
   if (!max_hypothesis->integer_value) {
@@ -211,6 +212,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   }
   max_hypothesis_ = static_cast<uint32_t>(*max_hypothesis->integer_value);
 
+  // Get resized_image_width parameter
   rcl_variant_t * resized_image_width = rcl_yaml_node_struct_get(
     "foundationpose", "resized_image_width", foundationpose_params);
   if (!resized_image_width->integer_value) {
@@ -219,6 +221,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   }
   resized_image_width_ = static_cast<uint32_t>(*resized_image_width->integer_value);
 
+  // Get resized_image_height parameter
   rcl_variant_t * resized_image_height = rcl_yaml_node_struct_get(
     "foundationpose", "resized_image_height", foundationpose_params);
   if (!resized_image_width->integer_value) {
@@ -227,6 +230,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   }
   resized_image_height_ = static_cast<uint32_t>(*resized_image_height->integer_value);
 
+  // Get refine_crop_ratio parameter
   rcl_variant_t * refine_crop_ratio = rcl_yaml_node_struct_get(
     "foundationpose", "refine_crop_ratio", foundationpose_params);
   if (!refine_crop_ratio->double_value) {
@@ -235,6 +239,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   }
   refine_crop_ratio_ = static_cast<float>(*refine_crop_ratio->double_value);
 
+  // Get score_crop_ratio parameter
   rcl_variant_t * score_crop_ratio = rcl_yaml_node_struct_get(
     "foundationpose", "score_crop_ratio", foundationpose_params);
   if (!score_crop_ratio->double_value) {
@@ -243,6 +248,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
   }
   score_crop_ratio_ = static_cast<float>(*score_crop_ratio->double_value);
 
+  // Get rot_normalizer parameter
   rcl_variant_t * rot_normalizer = rcl_yaml_node_struct_get(
     "foundationpose", "rot_normalizer", foundationpose_params);
   if (!rot_normalizer->double_value) {
@@ -411,8 +417,7 @@ void FoundationPoseNode::postLoadGraphCallback()
     "score_inference", "nvidia::gxf::TensorRtInference", "output_binding_names",
     score_output_binding_names_);
 
-  updateMeshPath();
-  updateTexturePath();
+  updateMeshAndTexture();
 }
 
 void FoundationPoseNode::FoundationPoseDetectionCallback(
@@ -477,22 +482,31 @@ void FoundationPoseNode::FoundationPoseDetectionCallback(
 void FoundationPoseNode::parameterCallback(
   const std::vector<rclcpp::Parameter> & parameters)
 {
+  bool mesh_updated = false;
+  bool texture_updated = false;
+
   for (const auto & param : parameters) {
     if (param.get_name() == "mesh_file_path") {
       current_mesh_file_path_ = param.as_string();
-      RCLCPP_INFO(get_logger(), "Updated mesh file path: %s", current_mesh_file_path_.c_str());
-      updateMeshPath();
+      mesh_updated = true;
     }
     if (param.get_name() == "texture_path") {
       current_texture_path_ = param.as_string();
-      RCLCPP_INFO(get_logger(), "Updated texture path: %s", current_texture_path_.c_str());
-      updateTexturePath();
+      texture_updated = true;
     }
+  }
+
+  if (mesh_updated || texture_updated) {
+    updateMeshAndTexture();
   }
 }
 
-void FoundationPoseNode::updateMeshPath()
+void FoundationPoseNode::updateMeshAndTexture()
 {
+  // Stop the nitros node
+  stopNitrosNode();
+
+    // 更新 mesh 文件路径
   getNitrosContext().setParameterStr(
     "render", "nvidia::isaac_ros::FoundationposeRender", "mesh_file_path", current_mesh_file_path_);
   getNitrosContext().setParameterStr(
@@ -501,14 +515,17 @@ void FoundationPoseNode::updateMeshPath()
     "decoder", "nvidia::isaac_ros::FoundationposeDecoder", "mesh_file_path", current_mesh_file_path_);
   getNitrosContext().setParameterStr(
     "transform", "nvidia::isaac_ros::FoundationposeTransformation", "mesh_file_path", current_mesh_file_path_);
-}
 
-void FoundationPoseNode::updateTexturePath()
-{
+  // 更新 texture 路径
   getNitrosContext().setParameterStr(
     "render", "nvidia::isaac_ros::FoundationposeRender", "texture_path", current_texture_path_);
   getNitrosContext().setParameterStr(
     "render_score", "nvidia::isaac_ros::FoundationposeRender", "texture_path", current_texture_path_);
+
+  // Restart the nitros node
+  startNitrosNode();
+
+  RCLCPP_INFO(get_logger(), "Updated mesh file path: %s", current_mesh_file_path_.c_str());
 }
 
 }  // namespace foundationpose

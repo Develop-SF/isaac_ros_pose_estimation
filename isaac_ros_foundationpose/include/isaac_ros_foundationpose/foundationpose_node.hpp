@@ -94,8 +94,7 @@ private:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
   
   void parameterCallback(const std::vector<rclcpp::Parameter> & parameters);
-  void updateMeshPath();
-  void updateTexturePath();
+  void updateMeshAndTexture();
 };
 
 }  // namespace foundationpose
