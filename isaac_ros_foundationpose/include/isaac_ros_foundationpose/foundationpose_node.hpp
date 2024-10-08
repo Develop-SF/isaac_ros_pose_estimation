@@ -46,6 +46,7 @@ public:
   ~FoundationPoseNode();
 
   void postLoadGraphCallback() override;
+  void stopNitrosNode();
 
   void FoundationPoseDetectionCallback(const gxf_context_t context, nitros::NitrosTypeBase & msg);
   void set_on_parameters_set_callback(rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);  

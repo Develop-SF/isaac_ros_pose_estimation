@@ -277,7 +277,7 @@ FoundationPoseNode::FoundationPoseNode(rclcpp::NodeOptions options)
     parameterCallback(parameters);
     return result;
   };
-  set_on_parameters_set_callback(param_change_callback);  
+  set_on_parameters_set_callback(param_change_callback);
 }
 
 FoundationPoseNode::~FoundationPoseNode() = default;
@@ -506,7 +506,7 @@ void FoundationPoseNode::updateMeshAndTexture()
   // Stop the nitros node
   stopNitrosNode();
 
-    // 更新 mesh 文件路径
+  // Update mesh file path
   getNitrosContext().setParameterStr(
     "render", "nvidia::isaac_ros::FoundationposeRender", "mesh_file_path", current_mesh_file_path_);
   getNitrosContext().setParameterStr(
@@ -516,7 +516,7 @@ void FoundationPoseNode::updateMeshAndTexture()
   getNitrosContext().setParameterStr(
     "transform", "nvidia::isaac_ros::FoundationposeTransformation", "mesh_file_path", current_mesh_file_path_);
 
-  // 更新 texture 路径
+  // Update texture path
   getNitrosContext().setParameterStr(
     "render", "nvidia::isaac_ros::FoundationposeRender", "texture_path", current_texture_path_);
   getNitrosContext().setParameterStr(
@@ -526,6 +526,7 @@ void FoundationPoseNode::updateMeshAndTexture()
   startNitrosNode();
 
   RCLCPP_INFO(get_logger(), "Updated mesh file path: %s", current_mesh_file_path_.c_str());
+  RCLCPP_INFO(get_logger(), "Updated texture path: %s", current_texture_path_.c_str());
 }
 
 }  // namespace foundationpose

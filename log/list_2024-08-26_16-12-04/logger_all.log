@@ -1,0 +1,198 @@
+[0.146s] colcon DEBUG Command line arguments: ['/usr/bin/colcon', 'list', '-p', '--base-paths', '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation']
+[0.146s] colcon DEBUG Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='list', build_base='build', ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], topological_order=False, names_only=False, paths_only=True, topological_graph=False, topological_graph_dot=False, topological_graph_density=False, topological_graph_legend=False, topological_graph_dot_cluster=False, topological_graph_dot_include_skipped=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x73d488e54640>, verb_extension=<colcon_package_information.verb.list.ListVerb object at 0x73d488e541c0>, main=<bound method ListVerb.main of <colcon_package_information.verb.list.ListVerb object at 0x73d488e541c0>>)
+[0.388s] colcon.colcon_core.package_discovery Level 1 discover_packages(colcon_meta) check parameters
+[0.388s] colcon.colcon_core.package_discovery Level 1 discover_packages(recursive) check parameters
+[0.388s] colcon.colcon_core.package_discovery Level 1 discover_packages(ignore) check parameters
+[0.388s] colcon.colcon_core.package_discovery Level 1 discover_packages(path) check parameters
+[0.388s] colcon.colcon_core.package_discovery Level 1 discover_packages(recursive) discover
+[0.388s] colcon.colcon_core.package_discovery INFO Crawling recursively for packages in '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation'
+[0.388s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['ignore', 'ignore_ament_install']
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'ignore'
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'ignore_ament_install'
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['colcon_pkg']
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'colcon_pkg'
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['colcon_meta']
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'colcon_meta'
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['ros']
+[0.389s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'ros'
+[0.435s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['cmake', 'python']
+[0.435s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'cmake'
+[0.435s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'python'
+[0.435s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extensions ['python_setup_py']
+[0.435s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation) by extension 'python_setup_py'
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extensions ['ignore', 'ignore_ament_install']
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extension 'ignore'
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extension 'ignore_ament_install'
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extensions ['colcon_pkg']
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extension 'colcon_pkg'
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extensions ['colcon_meta']
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extension 'colcon_meta'
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extensions ['ros']
+[0.436s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose) by extension 'ros'
+[0.443s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_centerpose' with type 'ros.ament_cmake' and name 'isaac_ros_centerpose'
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extensions ['ignore', 'ignore_ament_install']
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extension 'ignore'
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extension 'ignore_ament_install'
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extensions ['colcon_pkg']
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extension 'colcon_pkg'
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extensions ['colcon_meta']
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extension 'colcon_meta'
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extensions ['ros']
+[0.444s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope) by extension 'ros'
+[0.447s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_dope' with type 'ros.ament_cmake' and name 'isaac_ros_dope'
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extensions ['ignore', 'ignore_ament_install']
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extension 'ignore'
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extension 'ignore_ament_install'
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extensions ['colcon_pkg']
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extension 'colcon_pkg'
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extensions ['colcon_meta']
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extension 'colcon_meta'
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extensions ['ros']
+[0.448s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose) by extension 'ros'
+[0.452s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_foundationpose' with type 'ros.ament_cmake' and name 'isaac_ros_foundationpose'
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['ignore', 'ignore_ament_install']
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'ignore'
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'ignore_ament_install'
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['colcon_pkg']
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'colcon_pkg'
+[0.452s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['colcon_meta']
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'colcon_meta'
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['ros']
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'ros'
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['cmake', 'python']
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'cmake'
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'python'
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extensions ['python_setup_py']
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions) by extension 'python_setup_py'
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extensions ['ignore', 'ignore_ament_install']
+[0.453s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extension 'ignore'
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extension 'ignore_ament_install'
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extensions ['colcon_pkg']
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extension 'colcon_pkg'
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extensions ['colcon_meta']
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extension 'colcon_meta'
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extensions ['ros']
+[0.454s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose) by extension 'ros'
+[0.455s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_centerpose' with type 'ros.ament_cmake' and name 'gxf_isaac_centerpose'
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extensions ['ignore', 'ignore_ament_install']
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extension 'ignore'
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extension 'ignore_ament_install'
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extensions ['colcon_pkg']
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extension 'colcon_pkg'
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extensions ['colcon_meta']
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extension 'colcon_meta'
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extensions ['ros']
+[0.456s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope) by extension 'ros'
+[0.458s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_dope' with type 'ros.ament_cmake' and name 'gxf_isaac_dope'
+[0.458s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extensions ['ignore', 'ignore_ament_install']
+[0.458s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extension 'ignore'
+[0.458s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extension 'ignore_ament_install'
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extensions ['colcon_pkg']
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extension 'colcon_pkg'
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extensions ['colcon_meta']
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extension 'colcon_meta'
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extensions ['ros']
+[0.459s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose) by extension 'ros'
+[0.460s] colcon.colcon_core.package_identification DEBUG Package '/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/isaac_ros_gxf_extensions/gxf_isaac_foundationpose' with type 'ros.ament_cmake' and name 'gxf_isaac_foundationpose'
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/log) by extensions ['ignore', 'ignore_ament_install']
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/log) by extension 'ignore'
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/log) ignored
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['ignore', 'ignore_ament_install']
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'ignore'
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'ignore_ament_install'
+[0.461s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['colcon_pkg']
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'colcon_pkg'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['colcon_meta']
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'colcon_meta'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['ros']
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'ros'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['cmake', 'python']
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'cmake'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'python'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extensions ['python_setup_py']
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources) by extension 'python_setup_py'
+[0.462s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['ignore', 'ignore_ament_install']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'ignore'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'ignore_ament_install'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['colcon_pkg']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'colcon_pkg'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['colcon_meta']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'colcon_meta'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['ros']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'ros'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['cmake', 'python']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'cmake'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'python'
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extensions ['python_setup_py']
+[0.463s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags) by extension 'python_setup_py'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['ignore', 'ignore_ament_install']
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'ignore'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'ignore_ament_install'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['colcon_pkg']
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'colcon_pkg'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['colcon_meta']
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'colcon_meta'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['ros']
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'ros'
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['cmake', 'python']
+[0.464s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'cmake'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'python'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extensions ['python_setup_py']
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/resources/rosbags/foundationpose_tracking.bag) by extension 'python_setup_py'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['ignore', 'ignore_ament_install']
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'ignore'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'ignore_ament_install'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['colcon_pkg']
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'colcon_pkg'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['colcon_meta']
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'colcon_meta'
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['ros']
+[0.465s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'ros'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['cmake', 'python']
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'cmake'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'python'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extensions ['python_setup_py']
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test) by extension 'python_setup_py'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['ignore', 'ignore_ament_install']
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'ignore'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'ignore_ament_install'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['colcon_pkg']
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'colcon_pkg'
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['colcon_meta']
+[0.466s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'colcon_meta'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['ros']
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'ros'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['cmake', 'python']
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'cmake'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'python'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extensions ['python_setup_py']
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models) by extension 'python_setup_py'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['ignore', 'ignore_ament_install']
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'ignore'
+[0.467s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'ignore_ament_install'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['colcon_pkg']
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'colcon_pkg'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['colcon_meta']
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'colcon_meta'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['ros']
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'ros'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['cmake', 'python']
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'cmake'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'python'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extensions ['python_setup_py']
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol) by extension 'python_setup_py'
+[0.468s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['ignore', 'ignore_ament_install']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'ignore'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'ignore_ament_install'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['colcon_pkg']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'colcon_pkg'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['colcon_meta']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'colcon_meta'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['ros']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'ros'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['cmake', 'python']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'cmake'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'python'
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extensions ['python_setup_py']
+[0.469s] colcon.colcon_core.package_identification Level 1 _identify(/home/wychien/workspaces/isaac_ros-dev/src/isaac_ros_pose_estimation/test/models/dope_ketchup_pol/1) by extension 'python_setup_py'
+[0.469s] colcon.colcon_core.package_discovery Level 1 discover_packages(recursive) using defaults
