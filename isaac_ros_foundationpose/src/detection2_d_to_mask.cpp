@@ -71,7 +71,7 @@ public:
 
     std::string target_class_id_str = std::to_string(target_class_id_);
 
-    // RCLCPP_INFO_STREAM(this->get_logger(), "target class id:" << target_class_id_str);
+    RCLCPP_INFO_STREAM(this->get_logger(), "target class id:" << target_class_id_str);
 
     for (const auto & result : msg->results) {
       if (result.hypothesis.class_id == target_class_id_str) {
