@@ -50,8 +50,8 @@ REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/r
 REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
 SCORE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_model.onnx')
 SCORE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_trt_engine.plan')
-YOLO_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/best_grape_juice.onnx')
-YOLO_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/best_grape_juice.plan')
+YOLO_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/grape_juice/best_grape_juice.onnx')
+YOLO_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/grape_juicebest_grape_juice.plan')
 
 def generate_launch_description():
     """Generate launch description for testing relevant nodes."""

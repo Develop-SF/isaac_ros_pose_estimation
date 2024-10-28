@@ -19,7 +19,8 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 import launch
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
@@ -43,14 +44,18 @@ REALSENSE_TO_YOLO_RATIO = REALSENSE_IMAGE_WIDTH / YOLOV8_MODEL_INPUT_SIZE
 
 isaac_ros_assets_path = '/workspaces/isaac_ros-dev/isaac_ros_assets'
 
-MESH_FILE_PATH = [
-    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/AR-Code-Object-Capture-app-1718350160.obj'),
-    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/soy_sauce/AR-Code-Object-Capture-app-1718350160.obj')
+MESH_FILE_PATHS = [
+    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/seasoning/AR-Code-Object-Capture-app-1718350160.obj'),
+    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/cook_oil/AR-Code-Object-Capture-app-1718350160.obj')
 ]
-TEXTURE_PATH = [
-    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/grape_juice/baked_mesh_tex0.png'), 
-    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/soy_sauce/baked_mesh_d5970c9b_tex0.png')
-]    
+
+TEXTURE_PATHS = [
+    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/seasoning/baked_mesh_tex0.png'), 
+    os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/cook_oil/baked_mesh_d5970c9b_tex0.png')
+]
+
+# OBJECT_LIST = ['seasoning', 'soy_sauce']
+OBJECT_LIST = ['seasoning', 'cook_oil']
 
 REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_model.onnx')
 REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
@@ -80,12 +85,12 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'mesh_file_paths',
-            default_value=MESH_FILE_PATH,
+            default_value=",".join(MESH_FILE_PATHS),
             description='The absolute file path to the mesh files'),
 
         DeclareLaunchArgument(
             'texture_paths',
-            default_value=TEXTURE_PATH,
+            default_value=",".join(TEXTURE_PATHS),
             description='The absolute file path to the texture maps'),
 
         DeclareLaunchArgument(
@@ -129,6 +134,11 @@ def generate_launch_description():
             description='Name for ComposableNodeContainer'),
 
         DeclareLaunchArgument(
+            'container_name',
+            default_value='foundationpose_container',
+            description='Name for ComposableNodeContainer'),
+
+        DeclareLaunchArgument(
             'image_input_topic',
             default_value='/color/image_raw',
             description='The input topic for color images'),
@@ -140,14 +150,19 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'depth_input_topic',
-            default_value='/aligned_depth_to_color/image_raw',
-            description='The input topic for aligned depth images')
+            default_value='/camera/aligned_depth_to_color/image_raw',
+            description='The input topic for aligned depth images'),
+
+        DeclareLaunchArgument(
+            'object_list',
+            default_value=OBJECT_LIST,
+            description='The list of objects to be detected')
     ]
 
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
-    input_images_drop_freq = LaunchConfiguration('input_images_drop_freq')
     mesh_file_paths = LaunchConfiguration('mesh_file_paths')
     texture_paths = LaunchConfiguration('texture_paths')
+    input_images_drop_freq = LaunchConfiguration('input_images_drop_freq')
     refine_model_file_path = LaunchConfiguration('refine_model_file_path')
     refine_engine_file_path = LaunchConfiguration('refine_engine_file_path')
     score_model_file_path = LaunchConfiguration('score_model_file_path')
@@ -159,34 +174,8 @@ def generate_launch_description():
     image_input_topic = LaunchConfiguration('image_input_topic')
     camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
     depth_input_topic = LaunchConfiguration('depth_input_topic')
-
-    # RealSense
-    # realsense_config_file_path = os.path.join(
-    #     get_package_share_directory('isaac_ros_foundationpose'),
-    #     'config', 'realsense.yaml'
-    # )
-
-    # realsense_node = ComposableNode(
-    #     package='realsense2_camera',
-    #     plugin='realsense2_camera::RealSenseNodeFactory',
-    #     parameters=[realsense_config_file_path]
-    # )
-
-    realsense_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [os.path.join(
-                get_package_share_directory('realsense2_camera'),
-                'launch',
-                'rs_launch.py',
-                )
-            ]
-        ),
-        launch_arguments={
-            "pointcloud.enable": "true",
-            "align_depth.enable": "true"
-        }.items(),
-    )
-
+    object_list = LaunchConfiguration('object_list')
+        
     yolov8_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             yolov8_dir, 'launch', 'yolov8_tensor_rt.launch.py')]
@@ -209,10 +198,11 @@ def generate_launch_description():
             'image_mean': '[0.0, 0.0, 0.0]',
             'image_stddev': '[1.0, 1.0, 1.0]',
             'image_input_topic': image_input_topic,
-            'camera_info_input_topic': camera_info_input_topic,
-            'depth_input_topic': depth_input_topic
+            'camera_info_input_topic': camera_info_input_topic
         }.items(),
     )
+
+    preprocessing_nodes = list()
 
     # Drops hawk_expect_freq out of input_images_drop_freq RealSense messages
     drop_node = ComposableNode(
@@ -236,6 +226,8 @@ def generate_launch_description():
         ]
     )
 
+    preprocessing_nodes.append(drop_node)
+
     # Realsense depth is in uint16 and millimeters. Convert to float32 and meters
     convert_metric_node = ComposableNode(
         package='isaac_ros_depth_image_proc',
@@ -246,48 +238,8 @@ def generate_launch_description():
         ]
     )
 
-    # Create a binary segmentation mask from a Detection2DArray published by YOLOV8.
-    # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
-    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)
-    detection2_d_to_mask_node = ComposableNode(
-        name='detection2_d_to_mask',
-        package='isaac_ros_foundationpose',
-        plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
-        parameters=[{
-            'mask_width': REALSENSE_IMAGE_WIDTH,
-            'mask_height': REALSENSE_IMAGE_HEIGHT,
-            'target_class_id': 2
-        }],
-        remappings=[('detection2_d_array', 'detections_output'),
-                    ('segmentation', 'yolo_segmentation')])
-
-    # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
-    # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
-    # Resize from int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
-    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO) to
-    # ESS_MODEL_IMAGE_WIDTH x ESS_MODEL_IMAGE_HEIGHT
-    # output height constraint is used since keep_aspect_ratio is False
-    # and the image is padded
-    resize_mask_node = ComposableNode(
-        name='resize_mask_node',
-        package='isaac_ros_image_proc',
-        plugin='nvidia::isaac_ros::image_proc::ResizeNode',
-        parameters=[{
-            'input_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO),
-            'input_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO),
-            'output_width': REALSENSE_IMAGE_WIDTH,
-            'output_height': REALSENSE_IMAGE_HEIGHT,
-            'keep_aspect_ratio': True,
-            'disable_padding': False
-        }],
-        remappings=[
-            ('image', 'yolo_segmentation'),
-            ('camera_info', '/yolov8_encoder/resize/camera_info'),
-            ('resize/image', 'segmentation'),
-            ('resize/camera_info', 'camera_info_segmentation')
-        ]
-    )
-
+    preprocessing_nodes.append(convert_metric_node)
+    
     resize_left_viz = ComposableNode(
         name='resize_left_viz',
         package='isaac_ros_image_proc',
@@ -309,66 +261,7 @@ def generate_launch_description():
         ]
     )
 
-    foundationpose_multi_node = ComposableNode(
-        name='foundationpose_multi_node',
-        package='isaac_ros_foundationpose',
-        plugin='nvidia::isaac_ros::foundationpose::FoundationPoseMultiNode',
-        parameters=[{
-            'mesh_file_paths': mesh_file_paths,
-            'texture_paths': texture_paths,
-
-            'refine_model_file_path': refine_model_file_path,
-            'refine_engine_file_path': refine_engine_file_path,
-            'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
-            'refine_input_binding_names': ['input1', 'input2'],
-            'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
-            'refine_output_binding_names': ['output1', 'output2'],
-
-            'score_model_file_path': score_model_file_path,
-            'score_engine_file_path': score_engine_file_path,
-            'score_input_tensor_names': ['input_tensor1', 'input_tensor2'],
-            'score_input_binding_names': ['input1', 'input2'],
-            'score_output_tensor_names': ['output_tensor'],
-            'score_output_binding_names': ['output1'],
-        }],
-        remappings=[
-            ('pose_estimation/depth_image', 'depth_image'),
-            ('pose_estimation/image', 'rgb/image_rect_color'),
-            ('pose_estimation/camera_info', 'rgb/camera_info'),
-            ('pose_estimation/segmentation', 'segmentation'),
-            ('pose_estimation/combined_output', 'combined_pose_output')])
-    
-    selector_node = ComposableNode(
-        name='selector_node',
-        package='isaac_ros_foundationpose',
-        plugin='nvidia::isaac_ros::foundationpose::Selector',
-        parameters=[{
-             # Expect to reset after the rosbag play complete
-            'reset_period': 65000
-        }],
-        remappings=[
-            ('image', 'rgb/image_rect_color'),
-            ('camera_info', 'rgb/camera_info')
-        ])
-    
-    foundationpose_tracking_node = ComposableNode(
-        name='foundationpose_tracking_node',
-        package='isaac_ros_foundationpose',
-        plugin='nvidia::isaac_ros::foundationpose::FoundationPoseTrackingNode',
-        parameters=[{
-            'mesh_file_path': mesh_file_path,
-            'texture_path': texture_path,
-
-            'refine_model_file_path': refine_model_file_path,
-            'refine_engine_file_path': refine_engine_file_path,
-            'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
-            'refine_input_binding_names': ['input1', 'input2'],
-            'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
-            'refine_output_binding_names': ['output1', 'output2'],
-        }],
-        remappings=[
-            ('tracking/output', 'object_poses'),
-        ])
+    preprocessing_nodes.append(resize_left_viz)
 
     rviz_node = Node(
         package='rviz2',
@@ -376,25 +269,144 @@ def generate_launch_description():
         name='rviz2',
         arguments=['-d', rviz_config_path],
         condition=IfCondition(launch_rviz))
+    
+    # Create a binary segmentation mask from a Detection2DArray published by YOLOV8.
+    # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
+    # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)
+    detection2_d_to_mask_node = ComposableNode(
+        name='detection2_d_to_mask',
+        package='isaac_ros_foundationpose',
+        plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
+        parameters=[{
+            'mask_width': REALSENSE_IMAGE_WIDTH,
+            'mask_height': REALSENSE_IMAGE_HEIGHT,
+            'object_list': OBJECT_LIST
+        }],
+        remappings=[('detection2_d_array', 'fused_detections')])
+    
+    preprocessing_nodes.append(detection2_d_to_mask_node)
 
-    nodes = [
-        drop_node,
-        convert_metric_node,
-        detection2_d_to_mask_node,
-        resize_mask_node,
-        foundationpose_multi_node,
-        resize_left_viz, 
-        selector_node,
-        foundationpose_tracking_node
-    ]
+    def launch_setup(context, *args, **kwargs):
 
-    foundationpose_container = ComposableNodeContainer(
+        nodes = []
+
+        mesh_file_paths_list = context.perform_substitution(mesh_file_paths).split(',')
+        texture_paths_list = context.perform_substitution(texture_paths).split(',')
+
+        for mesh_file_path, texture_path in zip(mesh_file_paths_list, texture_paths_list):
+
+            obj_name = os.path.basename(mesh_file_path).split('.')[0]
+
+            # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
+            # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
+            # Resize from int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
+            # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO) to
+            # ESS_MODEL_IMAGE_WIDTH x ESS_MODEL_IMAGE_HEIGHT
+            # output height constraint is used since keep_aspect_ratio is False
+            # and the image is padded
+            resize_mask_node = ComposableNode(
+                name='resize_mask_node_'+obj_name,
+                package='isaac_ros_image_proc',
+                plugin='nvidia::isaac_ros::image_proc::ResizeNode',
+                parameters=[{
+                    'input_width': int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO),
+                    'input_height': int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO),
+                    'output_width': REALSENSE_IMAGE_WIDTH,
+                    'output_height': REALSENSE_IMAGE_HEIGHT,
+                    'keep_aspect_ratio': True,
+                    'disable_padding': False
+                }],
+                remappings=[
+                    ('image', 'yolo_segmentation_'+obj_name),
+                    ('camera_info', '/yolov8_encoder/resize/camera_info'),
+                    ('resize/image', 'segmentation_'+obj_name),
+                    ('resize/camera_info', 'camera_info_segmentation')
+                ]
+            )
+
+            foundationpose_node = ComposableNode(
+                name='foundationpose_node_' + obj_name,
+                package='isaac_ros_foundationpose',
+                plugin='nvidia::isaac_ros::foundationpose::FoundationPoseNode',
+                parameters=[{
+                    'mesh_file_path': mesh_file_path,
+                    'texture_path': texture_path,
+
+                    'refine_model_file_path': refine_model_file_path,
+                    'refine_engine_file_path': refine_engine_file_path,
+                    'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
+                    'refine_input_binding_names': ['input1', 'input2'],
+                    'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
+                    'refine_output_binding_names': ['output1', 'output2'],
+
+                    'score_model_file_path': score_model_file_path,
+                    'score_engine_file_path': score_engine_file_path,
+                    'score_input_tensor_names': ['input_tensor1', 'input_tensor2'],
+                    'score_input_binding_names': ['input1', 'input2'],
+                    'score_output_tensor_names': ['output_tensor'],
+                    'score_output_binding_names': ['output1'],
+                }],
+                remappings=[
+                    ('pose_estimation/depth_image', 'depth_image'),
+                    ('pose_estimation/image', 'rgb/image_rect_color'),
+                    ('pose_estimation/camera_info', 'rgb/camera_info'),
+                    ('pose_estimation/segmentation', 'segmentation_'+obj_name),
+                    ('pose_estimation/output', 'object_pose_'+obj_name)]
+            )
+
+            selector_node = ComposableNode(
+                name='selector_node_' + obj_name,
+                package='isaac_ros_foundationpose',
+                plugin='nvidia::isaac_ros::foundationpose::Selector',
+                parameters=[{
+                    # Expect to reset after the rosbag play complete
+                    'reset_period': 65000
+                }],
+                remappings=[
+                    ('image', 'rgb/image_rect_color'),
+                    ('camera_info', 'rgb/camera_info')
+                ]
+            ) 
+
+            foundationpose_tracking_node = ComposableNode(
+                name='foundationpose_tracking_node_' + obj_name,
+                package='isaac_ros_foundationpose',
+                plugin='nvidia::isaac_ros::foundationpose::FoundationPoseTrackingNode',
+                parameters=[{
+                    'mesh_file_path': mesh_file_path,
+                    'texture_path': texture_path,
+
+                    'refine_model_file_path': refine_model_file_path,
+                    'refine_engine_file_path': refine_engine_file_path,
+                    'refine_input_tensor_names': ['input_tensor1', 'input_tensor2'],
+                    'refine_input_binding_names': ['input1', 'input2'],
+                    'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
+                    'refine_output_binding_names': ['output1', 'output2'],
+                }]
+            )
+
+            foundationpose_container = ComposableNodeContainer(
+                name=context.perform_substitution(container_name),
+                namespace='',
+                package='rclcpp_components',
+                executable='component_container_mt',
+                composable_node_descriptions=[resize_mask_node, foundationpose_node],
+                output='screen'
+            )
+
+            nodes.append(foundationpose_container)
+
+        return nodes
+
+    foundationpose_nodes = OpaqueFunction(function=launch_setup, args=[mesh_file_paths, texture_paths, container_name])
+
+    preprocessing_container = ComposableNodeContainer(
         name=container_name,
         namespace='',
         package='rclcpp_components',
         executable='component_container_mt',
-        composable_node_descriptions=nodes,
+        composable_node_descriptions=preprocessing_nodes,
         output='screen'
     )
 
-    return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, realsense_node, yolov8_launch])
+    return launch.LaunchDescription(launch_args + [preprocessing_container, foundationpose_nodes, rviz_node, yolov8_launch])
