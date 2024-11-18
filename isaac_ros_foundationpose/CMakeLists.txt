@@ -41,6 +41,11 @@ ament_auto_add_library(detection2_d_to_mask SHARED src/detection2_d_to_mask.cpp)
 rclcpp_components_register_nodes(detection2_d_to_mask "nvidia::isaac_ros::foundationpose::Detection2DToMask")
 set(node_plugins "${node_plugins}nvidia::isaac_ros::foundationpose::Detection2DToMask;$<TARGET_FILE:detection2_d_to_mask>\n")
 
+# Detection2DToMultiMask utils node
+ament_auto_add_library(detection2_d_to_multi_mask SHARED src/detection2_d_to_multi_mask.cpp)
+rclcpp_components_register_nodes(detection2_d_to_multi_mask "nvidia::isaac_ros::foundationpose::Detection2DToMultiMask")
+set(node_plugins "${node_plugins}nvidia::isaac_ros::foundationpose::Detection2DToMultiMask;$<TARGET_FILE:detection2_d_to_multi_mask>\n")
+
 # Tracking selector node
 ament_auto_add_library(foundationpose_selector_node SHARED src/foundationpose_selector_node.cpp)
 rclcpp_components_register_nodes(foundationpose_selector_node "nvidia::isaac_ros::foundationpose::Selector")

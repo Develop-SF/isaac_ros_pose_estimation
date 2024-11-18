@@ -40,11 +40,20 @@ VISUALIZATION_DOWNSCALING_FACTOR = 10
 
 REALSENSE_TO_RT_DETR_RATIO = REALSENSE_IMAGE_WIDTH / RT_DETR_MODEL_INPUT_SIZE
 
-REFINE_MODEL_PATH = '/tmp/refine_model.onnx'
-REFINE_ENGINE_PATH = '/tmp/refine_trt_engine.plan'
-SCORE_MODEL_PATH = '/tmp/score_model.onnx'
-SCORE_ENGINE_PATH = '/tmp/score_trt_engine.plan'
+# REFINE_MODEL_PATH = '/tmp/refine_model.onnx'
+# REFINE_ENGINE_PATH = '/tmp/refine_trt_engine.plan'
+# SCORE_MODEL_PATH = '/tmp/score_model.onnx'
+# SCORE_ENGINE_PATH = '/tmp/score_trt_engine.plan'
 
+isaac_ros_assets_path = '/workspaces/isaac_ros-dev/isaac_ros_assets'
+
+MESH_FILE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/seasoning/refine/seasoning.obj')
+TEXTURE_PATH = os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/seasoning/refine/baked_mesh_39c5e9cd_tex0.png')
+
+REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_model.onnx')
+REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
+SCORE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_model.onnx')
+SCORE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_trt_engine.plan')
 
 def generate_launch_description():
     """Generate launch description for testing relevant nodes."""
@@ -70,12 +79,12 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'mesh_file_path',
-            default_value='',
+            default_value=MESH_FILE_PATH,
             description='The absolute file path to the mesh file'),
 
         DeclareLaunchArgument(
             'texture_path',
-            default_value='',
+            default_value=TEXTURE_PATH,
             description='The absolute file path to the texture map'),
 
         DeclareLaunchArgument(
@@ -391,20 +400,21 @@ def generate_launch_description():
         condition=IfCondition(launch_rviz))
 
     nodes = [
+        realsense_node,
         drop_node,
-        convert_metric_node,
-        resize_left_rt_detr_node,
-        pad_node,
-        image_to_tensor_node,
-        interleave_to_planar_node,
-        reshape_node,
-        rtdetr_preprocessor_node,
-        tensor_rt_node,
-        rtdetr_decoder_node,
+        # convert_metric_node,
+        # resize_left_rt_detr_node,
+        # pad_node,
+        # image_to_tensor_node,
+        # interleave_to_planar_node,
+        # reshape_node,
+        # rtdetr_preprocessor_node,
+        # tensor_rt_node,
+        # rtdetr_decoder_node,
         detection2_d_to_mask_node,
-        resize_mask_node,
-        foundationpose_node,
-        resize_left_viz
+        # resize_mask_node,
+        # foundationpose_node,
+        # resize_left_viz
     ]
 
     # if enable_rs:

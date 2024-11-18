@@ -54,8 +54,8 @@ TEXTURE_PATHS = [
     os.path.join(isaac_ros_assets_path, 'isaac_ros_foundationpose/cook_oil/baked_mesh_d5970c9b_tex0.png')
 ]
 
-# OBJECT_LIST = ['seasoning', 'soy_sauce']
-OBJECT_LIST = ['seasoning', 'cook_oil']
+OBJECT_LIST = ['seasoning']
+# OBJECT_LIST = ['seasoning', 'cook_oil']
 
 REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_model.onnx')
 REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
@@ -273,10 +273,10 @@ def generate_launch_description():
     # Create a binary segmentation mask from a Detection2DArray published by YOLOV8.
     # The segmentation mask is of size int(REALSENSE_IMAGE_WIDTH/REALSENSE_TO_YOLO_RATIO) x
     # int(REALSENSE_IMAGE_HEIGHT/REALSENSE_TO_YOLO_RATIO)
-    detection2_d_to_mask_node = ComposableNode(
-        name='detection2_d_to_mask',
+    detection2_d_to_multi_mask_node = ComposableNode(
+        name='detection2_d_to_multi_mask',
         package='isaac_ros_foundationpose',
-        plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
+        plugin='nvidia::isaac_ros::foundationpose::Detection2DToMultiMask',
         parameters=[{
             'mask_width': REALSENSE_IMAGE_WIDTH,
             'mask_height': REALSENSE_IMAGE_HEIGHT,
@@ -289,13 +289,28 @@ def generate_launch_description():
     def launch_setup(context, *args, **kwargs):
 
         nodes = []
-
-        mesh_file_paths_list = context.perform_substitution(mesh_file_paths).split(',')
-        texture_paths_list = context.perform_substitution(texture_paths).split(',')
+        if "," in context.perform_substitution(mesh_file_paths):
+            mesh_file_paths_list = context.perform_substitution(mesh_file_paths).split(',')
+            texture_paths_list = context.perform_substitution(texture_paths).split(',')
+        else:
+            mesh_file_paths_list = [context.perform_substitution(mesh_file_paths)]
+            texture_paths_list = [context.perform_substitution(texture_paths)]
 
         for mesh_file_path, texture_path in zip(mesh_file_paths_list, texture_paths_list):
 
             obj_name = os.path.basename(mesh_file_path).split('.')[0]
+
+            # detection2_d_to_mask_node = ComposableNode(
+            #     name='detection2_d_to_mask',
+            #     package='isaac_ros_foundationpose',
+            #     plugin='nvidia::isaac_ros::foundationpose::Detection2DToMask',
+            #     parameters=[{
+            #         'mask_width': REALSENSE_IMAGE_WIDTH,
+            #         'mask_height': REALSENSE_IMAGE_HEIGHT,
+            #         'object_list': [obj_name]
+            #     }],
+            #     remappings=[('detection2_d_array', 'fused_detections')]
+            # )
 
             # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
             # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
@@ -390,7 +405,7 @@ def generate_launch_description():
                 namespace='',
                 package='rclcpp_components',
                 executable='component_container_mt',
-                composable_node_descriptions=[resize_mask_node, foundationpose_node],
+                composable_node_descriptions=[foundationpose_node],
                 output='screen'
             )
 
@@ -409,4 +424,5 @@ def generate_launch_description():
         output='screen'
     )
 
-    return launch.LaunchDescription(launch_args + [preprocessing_container, foundationpose_nodes, rviz_node, yolov8_launch])
+    # return launch.LaunchDescription(launch_args + [preprocessing_container, foundationpose_nodes, rviz_node, yolov8_launch])
+    return launch.LaunchDescription(launch_args + [foundationpose_nodes])
