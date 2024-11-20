@@ -27,7 +27,7 @@ from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
 
 # Number of Realsense messages to be dropped in 1 second
-HAWK_EXPECT_FREQ = 28
+HAWK_EXPECT_FREQ = 2
 # Expected number of Realsense messages in 1 second
 INPUT_IMAGES_DROP_FREQ = 30
 
