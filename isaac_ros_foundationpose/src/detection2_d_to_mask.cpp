@@ -41,16 +41,28 @@ public:
   explicit Detection2DToMask(const rclcpp::NodeOptions & options)
   : Node("detection2_d_to_mask", options)
   {
+    object_name_mapping_ = std::map<std::string, std::vector<std::string>>{
+      {"seasoning", {"調味料","調味","料","味料", "调味"}},
+      {"soy_sauce", {"醬油","醬"}},
+      {"grape_juice", {"葡萄汁","葡萄","汁"}},
+      {"cook_oil", {"食用油","食用","用油"}}
+    };
+
     // Create a publisher for the mono8 image
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("segmentation", 10);
 
+    this->declare_parameter<std::string>("det2mask_input_topic", "/detections_output");
     this->declare_parameter<int>("mask_width", 640);
     this->declare_parameter<int>("mask_height", 480);
+    this->declare_parameter<std::string>("object_name", "");
+
+    this->get_parameter("det2mask_input_topic", det2mask_input_topic_);
     this->get_parameter("mask_width", mask_width_);
     this->get_parameter("mask_height", mask_height_);
+    this->get_parameter("object_name", object_name_);
 
     detection2_d_array_sub_ = this->create_subscription<vision_msgs::msg::Detection2DArray>(
-      "detection2_d_array", 10,
+      det2mask_input_topic_, 10,
       std::bind(&Detection2DToMask::boundingBoxArrayCallback, this, std::placeholders::_1));
     // Create subscriber for Detection2D
     detection2_d_sub_ = this->create_subscription<vision_msgs::msg::Detection2D>(
@@ -89,16 +101,24 @@ public:
     float max_confidence = 0;
     vision_msgs::msg::Detection2D max_confidence_detection;
     // Iterate through the detections and find the one with the highest confidence
-    for (auto detection : msg->detections) {
-      // Iterate through all the hypotheses for this detection
-      // and find the one with the highest confidence
-      for (auto result : detection.results) {
-        if (result.hypothesis.score > max_confidence) {
+
+    for (const auto& detection : msg->detections) {
+      for (const auto& result : detection.results) {
+        std::string eng_name = convertChineseToEnglish(result.hypothesis.class_id);
+        RCLCPP_INFO(this->get_logger(), "Class ID: %s", result.hypothesis.class_id.c_str());
+        RCLCPP_INFO(this->get_logger(), "Eng Name: %s", eng_name.c_str());
+        if (object_name_.empty() && result.hypothesis.score > max_confidence) {
+          max_confidence = result.hypothesis.score;
+          max_confidence_detection = detection;
+        }
+        else if (object_name_ == eng_name && result.hypothesis.score > max_confidence) {
           max_confidence = result.hypothesis.score;
           max_confidence_detection = detection;
         }
       }
     }
+
+    RCLCPP_INFO(this->get_logger(), "Max Confidence: %f, Object Name: %s", max_confidence, object_name_.c_str());
 
     // If no detection was found, return error
     if (max_confidence == 0) {
@@ -133,6 +153,21 @@ private:
   rclcpp::Subscription<vision_msgs::msg::Detection2DArray>::SharedPtr detection2_d_array_sub_;
   int mask_height_;
   int mask_width_;
+  std::string det2mask_input_topic_;
+  std::string object_name_;
+  std::map<std::string, std::vector<std::string>> object_name_mapping_;
+
+
+  std::string convertChineseToEnglish(const std::string& chinese_name) {
+    for (const auto& [eng_name, ch_names] : object_name_mapping_) {
+      for (const auto& ch_name : ch_names) {
+        if (chinese_name.find(ch_name) != std::string::npos) {
+          return eng_name;
+        }
+      }
+    }
+    return "";
+  }
 };
 
 }  // namespace foundationpose
