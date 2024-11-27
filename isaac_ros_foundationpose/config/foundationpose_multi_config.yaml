@@ -1,0 +1,13 @@
+nodes:
+  - mesh_file_path: "meshes/mesh1.obj"
+    texture_path: "textures/texture1.png"
+    configuration_file: "config/foundationpose_model_config1.yaml"
+
+  - mesh_file_path: "meshes/mesh2.obj"
+    texture_path: "textures/texture2.png"
+    configuration_file: "config/foundationpose_model_config2.yaml"
+
+  # 可以根據需要添加更多節點配置
+  - mesh_file_path: "meshes/mesh3.obj"
+    texture_path: "textures/texture3.png"
+    configuration_file: "config/foundationpose_model_config3.yaml"

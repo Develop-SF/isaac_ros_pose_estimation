@@ -135,7 +135,12 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'depth_input_topic',
             default_value='/aligned_depth_to_color/image_raw',
-            description='The input topic for aligned depth images')
+            description='The input topic for aligned depth images'),
+
+        DeclareLaunchArgument(
+            'det2mask_input_topic',
+            default_value='/detections_output',
+            description='The input topic for detection2mask')
     ]
 
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
@@ -153,18 +158,8 @@ def generate_launch_description():
     image_input_topic = LaunchConfiguration('image_input_topic')
     camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
     depth_input_topic = LaunchConfiguration('depth_input_topic')
+    det2mask_input_topic = LaunchConfiguration('det2mask_input_topic')
 
-    # RealSense
-    # realsense_config_file_path = os.path.join(
-    #     get_package_share_directory('isaac_ros_foundationpose'),
-    #     'config', 'realsense.yaml'
-    # )
-
-    # realsense_node = ComposableNode(
-    #     package='realsense2_camera',
-    #     plugin='realsense2_camera::RealSenseNodeFactory',
-    #     parameters=[realsense_config_file_path]
-    # )
     realsense_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(
@@ -249,10 +244,9 @@ def generate_launch_description():
         parameters=[{
             'mask_width': REALSENSE_IMAGE_WIDTH,
             'mask_height': REALSENSE_IMAGE_HEIGHT,
-            'target_class_id': 2
+            'det2mask_input_topic': det2mask_input_topic,
         }],
-        remappings=[('detection2_d_array', 'detections_output'),
-                    ('segmentation', 'yolo_segmentation')])
+        remappings=[('segmentation', 'yolo_segmentation')])
 
     # Resize segmentation mask to ESS model image size so it can be used by FoundationPose
     # FoundationPose requires depth, rgb image and segmentation mask to be of the same size
@@ -281,26 +275,26 @@ def generate_launch_description():
         ]
     )
 
-    resize_left_viz = ComposableNode(
-        name='resize_left_viz',
-        package='isaac_ros_image_proc',
-        plugin='nvidia::isaac_ros::image_proc::ResizeNode',
-        parameters=[{
-            'input_width': REALSENSE_IMAGE_WIDTH,
-            'input_height': REALSENSE_IMAGE_HEIGHT,
-            'output_width': int(REALSENSE_IMAGE_WIDTH/VISUALIZATION_DOWNSCALING_FACTOR),
-            'output_height': int(REALSENSE_IMAGE_HEIGHT/VISUALIZATION_DOWNSCALING_FACTOR),
-            'keep_aspect_ratio': False,
-            'encoding_desired': 'rgb8',
-            'disable_padding': False
-        }],
-        remappings=[
-            ('image', 'rgb/image_rect_color'),
-            ('camera_info', 'rgb/camera_info'),
-            ('resize/image', 'rgb/image_rect_color_viz'),
-            ('resize/camera_info', 'rgb/camera_info_viz')
-        ]
-    )
+    # resize_left_viz = ComposableNode(
+    #     name='resize_left_viz',
+    #     package='isaac_ros_image_proc',
+    #     plugin='nvidia::isaac_ros::image_proc::ResizeNode',
+    #     parameters=[{
+    #         'input_width': REALSENSE_IMAGE_WIDTH,
+    #         'input_height': REALSENSE_IMAGE_HEIGHT,
+    #         'output_width': int(REALSENSE_IMAGE_WIDTH/VISUALIZATION_DOWNSCALING_FACTOR),
+    #         'output_height': int(REALSENSE_IMAGE_HEIGHT/VISUALIZATION_DOWNSCALING_FACTOR),
+    #         'keep_aspect_ratio': False,
+    #         'encoding_desired': 'rgb8',
+    #         'disable_padding': False
+    #     }],
+    #     remappings=[
+    #         ('image', 'rgb/image_rect_color'),
+    #         ('camera_info', 'rgb/camera_info'),
+    #         ('resize/image', 'rgb/image_rect_color_viz'),
+    #         ('resize/camera_info', 'rgb/camera_info_viz')
+    #     ]
+    # )
 
     foundationpose_node = ComposableNode(
         name='foundationpose_node',
@@ -376,8 +370,7 @@ def generate_launch_description():
         detection2_d_to_mask_node,
         resize_mask_node,
         foundationpose_node,
-        resize_left_viz, 
-        # realsense_node,
+        # resize_left_viz, 
         selector_node,
         foundationpose_tracking_node
     ]

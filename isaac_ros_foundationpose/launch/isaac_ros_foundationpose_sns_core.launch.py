@@ -31,8 +31,8 @@ HAWK_EXPECT_FREQ = 2
 # Expected number of Realsense messages in 1 second
 INPUT_IMAGES_DROP_FREQ = 30
 
-YOLOV8_MODEL_INPUT_SIZE = 640  # RT-DETR models expect 640x640 encoded image size
-YOLOV8_MODEL_NUM_CHANNELS = 3  # RT-DETR models expect 3 image channels
+YOLOV8_MODEL_INPUT_SIZE = 640  # YOLO models expect 640x640 encoded image size
+YOLOV8_MODEL_NUM_CHANNELS = 3  # YOLO models expect 3 image channels
 
 REALSENSE_IMAGE_WIDTH = 1280
 REALSENSE_IMAGE_HEIGHT = 720
@@ -50,28 +50,22 @@ REFINE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/r
 REFINE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/refine_trt_engine.plan')
 SCORE_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_model.onnx')
 SCORE_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/foundationpose/score_trt_engine.plan')
-YOLO_MODEL_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/grape_juice/best_grape_juice.onnx')
-YOLO_ENGINE_PATH = os.path.join(isaac_ros_assets_path, 'models/yolov8/grape_juicebest_grape_juice.plan')
 
 def generate_launch_description():
     """Generate launch description for testing relevant nodes."""
     rviz_config_path = os.path.join(
         get_package_share_directory('isaac_ros_foundationpose'),
         'rviz', 'sns_foundationpose.rviz')
-    
-    yolov8_dir = get_package_share_directory('isaac_ros_yolov8')
 
     launch_args = [
         DeclareLaunchArgument(
             'hawk_expect_freq',
-            default_value=str(28),  # realsense fps, should be slight lower than settings
-            # default_value=str(5),  # omniverse fps
+            default_value=str(HAWK_EXPECT_FREQ),
             description='Number of Realsense messages to be dropped in 1 second'),
 
         DeclareLaunchArgument(
             'input_images_drop_freq',
-            default_value=str(30),  # realsense fps
-            # default_value=str(7), # omniverse fps
+            default_value=str(INPUT_IMAGES_DROP_FREQ),
             description='Expected number of Realsense messages in 1 second'),
 
         DeclareLaunchArgument(
@@ -105,16 +99,6 @@ def generate_launch_description():
             description='The absolute file path to the score trt engine'),
 
         DeclareLaunchArgument(
-            'yolov8_model_file_path',
-            default_value=YOLO_MODEL_PATH,
-            description='The absolute file path to the YOLOV8 ONNX file'),
-
-        DeclareLaunchArgument(
-            'yolov8_engine_file_path',
-            default_value=YOLO_ENGINE_PATH,
-            description='The absolute file path to the YOLOV8 TensorRT engine file'),
-
-        DeclareLaunchArgument(
             'launch_rviz',
             default_value='False',
             description='Flag to enable Rviz2 launch'),
@@ -126,12 +110,12 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'image_input_topic',
-            default_value='/camera/color/image_raw',
+            default_value='/color/image_raw',
             description='The input topic for color images'),
 
         DeclareLaunchArgument(
             'camera_info_input_topic',
-            default_value='/camera/color/camera_info',
+            default_value='/color/camera_info',
             description='The input topic for camera information'),
 
         DeclareLaunchArgument(
@@ -142,7 +126,12 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'det2mask_input_topic',
             default_value='/detections_output',
-            description='The input topic for detection2mask')
+            description='The input topic for detection2mask'),
+
+        DeclareLaunchArgument(
+            'object_name',
+            default_value='',
+            description='The name of the object to be detected')
     ]
 
     hawk_expect_freq = LaunchConfiguration('hawk_expect_freq')
@@ -153,43 +142,13 @@ def generate_launch_description():
     refine_engine_file_path = LaunchConfiguration('refine_engine_file_path')
     score_model_file_path = LaunchConfiguration('score_model_file_path')
     score_engine_file_path = LaunchConfiguration('score_engine_file_path')
-    yolov8_model_file_path = LaunchConfiguration('yolov8_model_file_path')
-    yolov8_engine_file_path = LaunchConfiguration('yolov8_engine_file_path')
     launch_rviz = LaunchConfiguration('launch_rviz')
     container_name = LaunchConfiguration('container_name')
     image_input_topic = LaunchConfiguration('image_input_topic')
     camera_info_input_topic = LaunchConfiguration('camera_info_input_topic')
     depth_input_topic = LaunchConfiguration('depth_input_topic')
     det2mask_input_topic = LaunchConfiguration('det2mask_input_topic')
-
-
-    yolov8_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            yolov8_dir, 'launch', 'yolov8_tensor_rt.launch.py')]
-        ),
-        launch_arguments={
-            'model_file_path': yolov8_model_file_path,
-            'engine_file_path': yolov8_engine_file_path,
-            'input_tensor_name': '["input_tensor"]',
-            'input_binding_names': '["images"]',
-            'output_tensor_names': '["output_tensor"]',
-            'output_binding_names': '["output0"]',
-            'verbose': 'False',
-            'force_engine_update': 'False',
-            'confidence_threshold': '0.25',
-            'nms_threshold': '0.45',
-            'input_image_width': str(REALSENSE_IMAGE_WIDTH),
-            'input_image_height': str(REALSENSE_IMAGE_HEIGHT),
-            'network_image_width': str(YOLOV8_MODEL_INPUT_SIZE),
-            'network_image_height': str(YOLOV8_MODEL_INPUT_SIZE),
-            'image_mean': '[0.0, 0.0, 0.0]',
-            'image_stddev': '[1.0, 1.0, 1.0]',
-            'image_input_topic': image_input_topic,
-            'camera_info_input_topic': camera_info_input_topic,
-            'depth_input_topic': depth_input_topic
-        }.items(),
-    )
-
+    object_name = LaunchConfiguration('object_name')
     # Drops hawk_expect_freq out of input_images_drop_freq RealSense messages
     drop_node = ComposableNode(
         name='drop_node',
@@ -233,6 +192,7 @@ def generate_launch_description():
             'mask_width': REALSENSE_IMAGE_WIDTH,
             'mask_height': REALSENSE_IMAGE_HEIGHT,
             'det2mask_input_topic': det2mask_input_topic,
+            'object_name': object_name,
         }],
         remappings=[('segmentation', 'yolo_segmentation')])
 
@@ -263,27 +223,6 @@ def generate_launch_description():
         ]
     )
 
-    # resize_left_viz = ComposableNode(
-    #     name='resize_left_viz',
-    #     package='isaac_ros_image_proc',
-    #     plugin='nvidia::isaac_ros::image_proc::ResizeNode',
-    #     parameters=[{
-    #         'input_width': REALSENSE_IMAGE_WIDTH,
-    #         'input_height': REALSENSE_IMAGE_HEIGHT,
-    #         'output_width': int(REALSENSE_IMAGE_WIDTH/VISUALIZATION_DOWNSCALING_FACTOR),
-    #         'output_height': int(REALSENSE_IMAGE_HEIGHT/VISUALIZATION_DOWNSCALING_FACTOR),
-    #         'keep_aspect_ratio': False,
-    #         'encoding_desired': 'rgb8',
-    #         'disable_padding': False
-    #     }],
-    #     remappings=[
-    #         ('image', 'rgb/image_rect_color'),
-    #         ('camera_info', 'rgb/camera_info'),
-    #         ('resize/image', 'rgb/image_rect_color_viz'),
-    #         ('resize/camera_info', 'rgb/camera_info_viz')
-    #     ]
-    # )
-
     foundationpose_node = ComposableNode(
         name='foundationpose_node',
         package='isaac_ros_foundationpose',
@@ -305,6 +244,7 @@ def generate_launch_description():
             'score_input_binding_names': ['input1', 'input2'],
             'score_output_tensor_names': ['output_tensor'],
             'score_output_binding_names': ['output1'],
+            'tf_frame_name': object_name
         }],
         remappings=[
             ('pose_estimation/depth_image', 'depth_image'),
@@ -340,14 +280,8 @@ def generate_launch_description():
             'refine_input_binding_names': ['input1', 'input2'],
             'refine_output_tensor_names': ['output_tensor1', 'output_tensor2'],
             'refine_output_binding_names': ['output1', 'output2'],
+            'tf_frame_name': object_name
         }])
-
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz_config_path],
-        condition=IfCondition(launch_rviz))
 
     nodes = [
         drop_node,
@@ -355,7 +289,6 @@ def generate_launch_description():
         detection2_d_to_mask_node,
         resize_mask_node,
         foundationpose_node,
-        # resize_left_viz,
         selector_node,
         foundationpose_tracking_node
     ]
@@ -369,4 +302,4 @@ def generate_launch_description():
         output='screen'
     )
 
-    return launch.LaunchDescription(launch_args + [foundationpose_container, rviz_node, yolov8_launch])
+    return launch.LaunchDescription(launch_args + [foundationpose_container])
