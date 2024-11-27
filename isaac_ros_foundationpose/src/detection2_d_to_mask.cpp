@@ -101,6 +101,7 @@ public:
     float max_confidence = 0;
     vision_msgs::msg::Detection2D max_confidence_detection;
     // Iterate through the detections and find the one with the highest confidence
+
     for (const auto& detection : msg->detections) {
       for (const auto& result : detection.results) {
         std::string eng_name = convertChineseToEnglish(result.hypothesis.class_id);

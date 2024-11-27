@@ -64,12 +64,14 @@ def generate_launch_description():
     launch_args = [
         DeclareLaunchArgument(
             'hawk_expect_freq',
-            default_value=str(HAWK_EXPECT_FREQ),
+            default_value=str(28),  # realsense fps, should be slight lower than settings
+            # default_value=str(5),  # omniverse fps
             description='Number of Realsense messages to be dropped in 1 second'),
 
         DeclareLaunchArgument(
             'input_images_drop_freq',
-            default_value=str(INPUT_IMAGES_DROP_FREQ),
+            default_value=str(30),  # realsense fps
+            # default_value=str(7), # omniverse fps
             description='Expected number of Realsense messages in 1 second'),
 
         DeclareLaunchArgument(
@@ -124,12 +126,12 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'image_input_topic',
-            default_value='/color/image_raw',
+            default_value='/camera/color/image_raw',
             description='The input topic for color images'),
 
         DeclareLaunchArgument(
             'camera_info_input_topic',
-            default_value='/color/camera_info',
+            default_value='/camera/color/camera_info',
             description='The input topic for camera information'),
 
         DeclareLaunchArgument(
